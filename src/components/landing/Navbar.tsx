@@ -25,11 +25,10 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-card/95 backdrop-blur-md shadow-card py-3"
-          : "bg-transparent py-5"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? "bg-card/95 backdrop-blur-md shadow-card py-3"
+        : "bg-transparent py-5"
+        }`}
     >
       <div className="container flex items-center justify-between">
         <a href="#" className="flex items-center gap-2">
@@ -58,7 +57,14 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="font-medium">
+          {/* <Button variant="ghost" size="sm" className="font-medium">
+            Sign in
+          </Button> */}
+          <Button
+            variant="ghost"
+            className="w-full font-medium"
+            onClick={() => window.open('https://rotamanagement.techmavegroup.com', '_blank', 'noopener,noreferrer')}
+          >
             Sign in
           </Button>
           <Button size="sm" className="shadow-button font-medium" onClick={() => navigate("/registration")}>
@@ -90,7 +96,11 @@ const Navbar = () => {
               </a>
             ))}
             <div className="flex flex-col gap-3 pt-4 border-t border-border">
-              <Button variant="ghost" className="w-full font-medium">
+              <Button
+                variant="ghost"
+                className="w-full font-medium"
+                onClick={() => window.open('https://rotamanagement.techmavegroup.com', '_blank', 'noopener,noreferrer')}
+              >
                 Sign in
               </Button>
               <Button className="w-full shadow-button font-medium">

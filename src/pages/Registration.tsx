@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import './registration.css';
 import PhoneInput from "react-phone-input-2";
+import { getPlan } from '@/store';
+import notify from '@/utils/notify';
 
 const steps = [
   { id: 1, title: 'Business Info', desc: 'Basic business details' },
@@ -9,39 +11,6 @@ const steps = [
   { id: 3, title: 'Account', desc: 'Create your login' },
   { id: 4, title: 'Payment', desc: 'Enter payment details' },
   { id: 5, title: 'Success', desc: 'Finish and submit' },
-];
-
-const plans = [
-  {
-    id: 'basic',
-    name: 'Basic Plan',
-    value: 'Basic',
-    summary: 'For small care teams just getting started',
-    features: ['Up to 30 staff', 'Basic scheduling', 'Mobile app access', 'Email support', '7-day data history'],
-    priceMonthly: '£29.99',
-    priceYearly: '£24.99',
-    badge: "Free"
-  },
-  {
-    id: 'pro',
-    name: 'Standard Plan',
-    value: 'Standard Plan',
-    summary: 'For growing organizations that need more power',
-    features: ['Up to 100 staff', 'Advanced scheduling', 'Time tracking & GPS', 'Payroll integration', 'Priority support'],
-    priceMonthly: '£54.99',
-    priceYearly: '£47.99',
-    badge: "Pro"
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise Plan',
-    value: 'Enterprise Plan',
-    summary: 'For large-scale operations',
-    features: ['Unlimited staff', 'All Standard features', 'Custom workflows', 'API access', 'Dedicated manager'],
-    priceMonthly: '£74.99',
-    priceYearly: '£64.99',
-    badge: "Premium"
-  },
 ];
 
 const Registration = () => {
@@ -65,6 +34,31 @@ const Registration = () => {
     countryName: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [plans, setPlans] = useState<any[]>([]);
+
+
+  useEffect(() => {
+    handleFetchPlans()
+  }, [])
+
+  const handleFetchPlans = async () => {
+    await getPlan((status, res) => {
+      if (res?.data?.status == true) {
+        console.log(res?.data, "-----");
+        const apiPlans = res?.data?.data || [];
+        setPlans(apiPlans);
+        if (apiPlans.length > 0) {
+          setSelectedPlan(apiPlans[0].name);
+        }
+      } else {
+        console.log(res?.data?.message, "error")
+      }
+    }, (err) => {
+      notify(err?.response?.data?.message, "error")
+    })
+  }
+
+
 
 
   const goToStep = (index) => {
@@ -125,9 +119,9 @@ const Registration = () => {
   };
 
   const getCurrentPrice = () => {
-    const plan = plans.find(p => p.value === selectedPlan);
-    if (!plan) return '£54.99';
-    return billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
+    const plan = plans.find(p => p.name === selectedPlan);
+    if (!plan) return '£0';
+    return `${plan.currency}${plan.price}`;
   };
   const progressPercentage = ((currentStep + 1) / steps.length) * 100;
 
@@ -272,27 +266,27 @@ const Registration = () => {
                 <p className="text-gray-600 mb-6">Select the plan that best fits your needs.</p>
 
                 <div className="option-grid">
-                  {plans?.map((plan) => (
+                  {plans?.map((plan, index) => (
                     <div key={plan.id} className="select-card">
                       <input
                         type="radio"
                         id={`plan_${plan.id}`}
                         name="plan_name"
-                        value={plan.value}
-                        checked={selectedPlan === plan.value}
-                        onChange={() => setSelectedPlan(plan.value)}
+                        value={plan.name}
+                        checked={selectedPlan === plan.name}
+                        onChange={() => setSelectedPlan(plan.name)}
                       />
                       <label className="plan-card" htmlFor={`plan_${plan.id}`}>
-                        {plan.badge && (
-                          <span className={`plan-badge ${plan.badge.toLowerCase()}`}>
-                            {plan.badge}
+                        {plan.type && (
+                          <span className={`plan-badge badge-color-${index % 4}`}>
+                            {plan.type}
                           </span>
                         )}
                         <span className="card-icon">💎</span>
-                        <span className="title">{plan.name.split(' ')[0]}</span>
-                        <span className="plan-summary">{plan.summary}</span>
+                        <span className="title">{plan.name}</span>
+                        <span className="plan-summary">{plan.highlight?.[0] || 'A great plan for your needs'}</span>
                         <ul className="plan-features">
-                          {plan.features.map((feature, i) => (
+                          {plan.permission?.slice(0, 5).map((feature: string, i: number) => (
                             <li key={i}>
                               <Icon icon="iconamoon:check-fill" />
                               {feature}
@@ -301,10 +295,10 @@ const Registration = () => {
                         </ul>
                         <div className="plan-footer">
                           <div>
-                            <span className="price" data-monthly={plan.priceMonthly} data-yearly={plan.priceYearly}>
-                              {billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly}
+                            <span className="price">
+                              {plan.currency}{plan.price}
                             </span>
-                            <span className="CTA-subtext">/per month</span>
+                            <span className="CTA-subtext">/{plan.duration === 'Annually' ? 'year' : 'month'}</span>
                           </div>
                           <span className="plan-action">Continue</span>
                         </div>
@@ -398,9 +392,9 @@ const Registration = () => {
                 <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-100 rounded-2xl p-6 mb-8">
                   <h6 className="font-semibold mb-4">Order Summary</h6>
                   <div className="space-y-3 text-sm">
-                    <div className="flex justify-between"><span>Plan</span><strong>{plans.find(p => p.value === selectedPlan)?.name || selectedPlan}</strong></div>
-                    <div className="flex justify-between"><span>Billing</span><strong>{billingCycle === 'monthly' ? 'Monthly' : 'Yearly'}</strong></div>
-                    <div className="flex justify-between border-t pt-3"><span>Total</span><strong className="text-xl">{getCurrentPrice()} / {billingCycle === 'monthly' ? 'month' : 'year'}</strong></div>
+                    <div className="flex justify-between"><span>Plan</span><strong>{selectedPlan}</strong></div>
+                    <div className="flex justify-between"><span>Billing</span><strong>{plans.find(p => p.name === selectedPlan)?.duration || 'Annually'}</strong></div>
+                    <div className="flex justify-between border-t pt-3"><span>Total</span><strong className="text-xl">{getCurrentPrice()} / {plans.find(p => p.name === selectedPlan)?.duration === 'Annually' ? 'year' : 'month'}</strong></div>
                   </div>
                 </div>
 
@@ -449,7 +443,7 @@ const Registration = () => {
                 <h6 className="text-2xl text-gray-700 mb-4">Your RotaFlow account is ready.</h6>
                 <p className="text-gray-600 max-w-md mx-auto mb-10">Start managing your care team and scheduling with ease now.</p>
                 <button
-                  onClick={() => window.location.href = '/dashboard'}
+                  onClick={() => window.location.href = '/'}
                   className="bg-green-600 hover:bg-green-700 text-white font-bold text-lg px-12 py-4 rounded-2xl inline-flex items-center gap-3"
                 >
                   Go to Dashboard →
