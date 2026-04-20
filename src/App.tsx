@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Registration from "./pages/Registration";
 import NotFound from "./pages/NotFound";
+import "react-phone-input-2/lib/style.css";
 
 const queryClient = new QueryClient();
 

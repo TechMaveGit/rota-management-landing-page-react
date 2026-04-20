@@ -1,71 +1,71 @@
-﻿// src/pages/Registration.tsx
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import './registration.css';
+import PhoneInput from "react-phone-input-2";
+
+const steps = [
+  { id: 1, title: 'Business Info', desc: 'Basic business details' },
+  { id: 2, title: 'Plan', desc: 'Select the right plan' },
+  { id: 3, title: 'Account', desc: 'Create your login' },
+  { id: 4, title: 'Payment', desc: 'Enter payment details' },
+  { id: 5, title: 'Success', desc: 'Finish and submit' },
+];
+
+const plans = [
+  {
+    id: 'basic',
+    name: 'Basic Plan',
+    value: 'Basic',
+    summary: 'For small care teams just getting started',
+    features: ['Up to 30 staff', 'Basic scheduling', 'Mobile app access', 'Email support', '7-day data history'],
+    priceMonthly: '£29.99',
+    priceYearly: '£24.99',
+    badge: "Free"
+  },
+  {
+    id: 'pro',
+    name: 'Standard Plan',
+    value: 'Standard Plan',
+    summary: 'For growing organizations that need more power',
+    features: ['Up to 100 staff', 'Advanced scheduling', 'Time tracking & GPS', 'Payroll integration', 'Priority support'],
+    priceMonthly: '£54.99',
+    priceYearly: '£47.99',
+    badge: "Pro"
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise Plan',
+    value: 'Enterprise Plan',
+    summary: 'For large-scale operations',
+    features: ['Unlimited staff', 'All Standard features', 'Custom workflows', 'API access', 'Dedicated manager'],
+    priceMonthly: '£74.99',
+    priceYearly: '£64.99',
+    badge: "Premium"
+  },
+];
 
 const Registration = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [selectedPlan, setSelectedPlan] = useState('Standard Plan');
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [selectedCountry, setSelectedCountry] = useState('United Kingdom');
-  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
-  const [selectedBusinessType, setSelectedBusinessType] = useState('Home Care Agency');
-  const [businessTypeDropdownOpen, setBusinessTypeDropdownOpen] = useState(false);
+  const [businessName, setBusinessName] = useState("")
+  const [businessEmail, setBusinessEmail] = useState("")
+  const [businessAddress, setBusinessAddress] = useState("")
+  const [BusinessPhoneNo, setBusinessPhoneNo] = useState("")
+  const [businessCity, setBusinessCity] = useState("")
+  const [state, setState] = useState("")
+  const [zipCode, setZipCode] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [formData, setFormData] = useState({
+    phone: "",
+    localPhone: "",
+    dialCode: "",
+    countryName: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const businessTypes = [
-    { name: 'Home Care Agency', icon: 'mdi:home-heart' },
-    { name: 'Nursing Agency', icon: 'mdi:hospital-box' },
-    { name: 'Care Home', icon: 'mdi:home-group' },
-    { name: 'Other', icon: 'mdi:dots-horizontal' },
-  ];
-
-  const countries = [
-    { name: 'United Kingdom', flag: '🇬🇧', code: 'UK' },
-    { name: 'Ireland', flag: '🇮🇪', code: 'IE' },
-    { name: 'United States', flag: '🇺🇸', code: 'US' },
-  ];
-
-  const steps = [
-    { id: 1, title: 'Business Info', desc: 'Basic business details' },
-    { id: 2, title: 'Plan', desc: 'Select the right plan' },
-    { id: 3, title: 'Account', desc: 'Create your login' },
-    { id: 4, title: 'Payment', desc: 'Enter payment details' },
-    { id: 5, title: 'Success', desc: 'Finish and submit' },
-  ];
-
-  const plans = [
-    {
-      id: 'basic',
-      name: 'Basic Plan',
-      value: 'Basic',
-      summary: 'For small care teams just getting started',
-      features: ['Up to 30 staff', 'Basic scheduling', 'Mobile app access', 'Email support', '7-day data history'],
-      priceMonthly: '£29.99',
-      priceYearly: '£24.99',
-       badge: "Free"
-    },
-    {
-      id: 'pro',
-      name: 'Standard Plan',
-      value: 'Standard Plan',
-      summary: 'For growing organizations that need more power',
-      features: ['Up to 100 staff', 'Advanced scheduling', 'Time tracking & GPS', 'Payroll integration', 'Priority support'],
-      priceMonthly: '£54.99',
-      priceYearly: '£47.99',
-       badge: "Pro"
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise Plan',
-      value: 'Enterprise Plan',
-      summary: 'For large-scale operations',
-      features: ['Unlimited staff', 'All Standard features', 'Custom workflows', 'API access', 'Dedicated manager'],
-      priceMonthly: '£74.99',
-      priceYearly: '£64.99',
-           badge: "Premium"
-    },
-  ];
 
   const goToStep = (index) => {
     if (index >= 0 && index < steps.length) {
@@ -73,7 +73,46 @@ const Registration = () => {
     }
   };
 
+  const validateStep1 = () => {
+    const newErrors: Record<string, string> = {};
+    if (!businessName.trim()) newErrors.businessName = "Business Name is required";
+    if (!businessEmail.trim()) {
+      newErrors.businessEmail = "Business Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(businessEmail)) {
+      newErrors.businessEmail = "Invalid email format";
+    }
+    if (!businessAddress.trim()) newErrors.businessAddress = "Business Address is required";
+    if (!BusinessPhoneNo.trim()) newErrors.BusinessPhoneNo = "Business Phone No is required";
+    if (!businessCity.trim()) newErrors.businessCity = "City is required";
+    if (!state.trim()) newErrors.state = "State is required";
+    if (!zipCode.trim()) newErrors.zipCode = "Zip Code is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep3 = () => {
+    const newErrors: Record<string, string> = {};
+    if (!firstName.trim()) newErrors.firstName = "First Name is required";
+    if (!lastName.trim()) newErrors.lastName = "Last Name is required";
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Invalid email format";
+    }
+    if (!formData.phone || formData.phone.length < 5) newErrors.phone = "Phone number is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const nextStep = () => {
+    if (currentStep === 0) {
+      if (!validateStep1()) return;
+    }
+    if (currentStep === 2) {
+      if (!validateStep3()) return;
+    }
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -90,12 +129,10 @@ const Registration = () => {
     if (!plan) return '£54.99';
     return billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
   };
-
   const progressPercentage = ((currentStep + 1) / steps.length) * 100;
 
   return (
     <div className="flex h-screen overflow-hidden bg-white">
-      {/* Left Sidebar */}
       <div className="w-1/4 bg-[#fcfcfc] border-r border-gray-200 flex flex-col">
         <div className="p-8">
           <div className="flex items-center gap-3 mb-8">
@@ -117,16 +154,15 @@ const Registration = () => {
                 key={step.id}
                 onClick={() => goToStep(index)}
                 disabled={index > currentStep}
-                className={`w-full flex items-start gap-4 p-4 rounded-2xl transition-all ${
-                  index === currentStep
-                    ? 'bg-white'
-                    : index < currentStep
+                className={`w-full flex items-start gap-4 p-4 rounded-2xl transition-all ${index === currentStep
+                  ? 'bg-white'
+                  : index < currentStep
                     ? ''
                     : 'opacity-60 cursor-not-allowed'
-                }`}
+                  }`}
               >
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 flex-shrink-0
-                  ${index === currentStep ? 'bg-green-600 text-white border-green-600' : 
+                  ${index === currentStep ? 'bg-green-600 text-white border-green-600' :
                     index < currentStep ? 'bg-green-600 text-white border-green-600' : 'border-gray-300 text-gray-500'}`}>
                   {index + 1}
                 </div>
@@ -140,9 +176,7 @@ const Registration = () => {
         </div>
       </div>
 
-      {/* Main Form Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Progress Bar */}
         <div className="border-b bg-white px-8 py-4 flex items-center justify-between sticky top-0 z-10">
           <div className="flex-1 w-full max-w-4xl mx-auto">
             <div className="flex justify-between text-sm mb-2">
@@ -157,43 +191,75 @@ const Registration = () => {
           </div>
         </div>
 
-        {/* Form Content */}
         <div className="flex-1 overflow-auto p-8">
           <div className="max-w-4xl mx-auto">
-            {/* Step 1: Business Info */}
             {currentStep === 0 && (
               <div>
-                <h4 className="text-2xl font-semibold mb-2">Tell Us About Your Business</h4>
+                <h4 className="text-2xl font-semibold mb-2">Let’s Learn About Your Business</h4>
                 <p className="text-gray-600 mb-8">Enter your business details so we can set up your workspace correctly.</p>
 
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Business Name *</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="Enter your business name" />
+                    <input type="text" value={businessName} onChange={(e) => {
+                      setBusinessName(e.target.value);
+                      if (errors.businessName) setErrors((prev) => ({ ...prev, businessName: "" }));
+                    }}
+                      className={`w-full border ${errors.businessName ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="Enter your business name" />
+                    {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Business Email *</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="Enter your business email" />
+                    <input type="text" value={businessEmail} onChange={(e) => {
+                      setBusinessEmail(e.target.value);
+                      if (errors.businessEmail) setErrors((prev) => ({ ...prev, businessEmail: "" }));
+                    }}
+                      className={`w-full border ${errors.businessEmail ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="Enter your business email" />
+                    {errors.businessEmail && <p className="text-red-500 text-xs mt-1">{errors.businessEmail}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Business Address *</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="Enter your business address" />
+                    <input type="text" value={businessAddress} onChange={(e) => {
+                      setBusinessAddress(e.target.value);
+                      if (errors.businessAddress) setErrors((prev) => ({ ...prev, businessAddress: "" }));
+                    }}
+                      className={`w-full border ${errors.businessAddress ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="Enter your business address" />
+                    {errors.businessAddress && <p className="text-red-500 text-xs mt-1">{errors.businessAddress}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Business Phone No *</label>
-                    <input type="tel" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="+44 7123 456789" />
+                    <input type="tel" value={BusinessPhoneNo} onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9+]/g, "");
+                      setBusinessPhoneNo(value);
+                      if (errors.BusinessPhoneNo) setErrors((prev) => ({ ...prev, BusinessPhoneNo: "" }));
+                    }}
+                      className={`w-full border ${errors.BusinessPhoneNo ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="+44 7123 456789" />
+                    {errors.BusinessPhoneNo && <p className="text-red-500 text-xs mt-1">{errors.BusinessPhoneNo}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                    <input type="email" id="businessEmail" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="please enter your city" />
+                    <input value={businessCity} onChange={(e) => {
+                      setBusinessCity(e.target.value);
+                      if (errors.businessCity) setErrors((prev) => ({ ...prev, businessCity: "" }));
+                    }}
+                      type="text" id="businessCity" className={`w-full border ${errors.businessCity ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="please enter your city" />
+                    {errors.businessCity && <p className="text-red-500 text-xs mt-1">{errors.businessCity}</p>}
                   </div>
-                    <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
-                    <input type="email" id="businessEmail" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="please enter your state" />
+                    <input value={state} onChange={(e) => {
+                      setState(e.target.value);
+                      if (errors.state) setErrors((prev) => ({ ...prev, state: "" }));
+                    }} type="text" id="businessState" className={`w-full border ${errors.state ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="please enter your state" />
+                    {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
                   </div>
-                      <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code *</label>
-                    <input type="email" id="businessEmail" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="please enter your zip code" />
+                    <input value={zipCode} onChange={(e) => {
+                      setZipCode(e.target.value);
+                      if (errors.zipCode) setErrors((prev) => ({ ...prev, zipCode: "" }));
+                    }} type="number" id="businessZipCode" className={`w-full border ${errors.zipCode ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="please enter your zip code" />
+                    {errors.zipCode && <p className="text-red-500 text-xs mt-1">{errors.zipCode}</p>}
                   </div>
                 </div>
               </div>
@@ -216,12 +282,12 @@ const Registration = () => {
                         checked={selectedPlan === plan.value}
                         onChange={() => setSelectedPlan(plan.value)}
                       />
-                      <label className="plan-card" htmlFor={`plan_${plan.id} `}>
-                         {plan.badge && (
-    <span className={`plan-badge ${plan.badge.toLowerCase()}`}>
-      {plan.badge}
-    </span>
-  )}
+                      <label className="plan-card" htmlFor={`plan_${plan.id}`}>
+                        {plan.badge && (
+                          <span className={`plan-badge ${plan.badge.toLowerCase()}`}>
+                            {plan.badge}
+                          </span>
+                        )}
                         <span className="card-icon">💎</span>
                         <span className="title">{plan.name.split(' ')[0]}</span>
                         <span className="plan-summary">{plan.summary}</span>
@@ -258,15 +324,65 @@ const Registration = () => {
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium mb-2">First Name *</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="Enter your first name" />
+                    <input type="text" value={firstName} onChange={(e) => {
+                      setFirstName(e.target.value);
+                      if (errors.firstName) setErrors((prev) => ({ ...prev, firstName: "" }));
+                    }} className={`w-full border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="Enter your first name" />
+                    {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
                   </div>
-                   <div>
+                  <div>
                     <label className="block text-sm font-medium mb-2">Last Name *</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="Enter your last name" />
+                    <input type="text" value={lastName} onChange={(e) => {
+                      setLastName(e.target.value);
+                      if (errors.lastName) setErrors((prev) => ({ ...prev, lastName: "" }));
+                    }} className={`w-full border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="Enter your last name" />
+                    {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Email *</label>
-                    <input type="email" id="accountEmail" className="w-full border border-gray-300 rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all" placeholder="name@company.co.uk" />
+                    <input type="email" value={email} onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+                    }} id="accountEmail" className={`w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="name@company.co.uk" />
+                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Phone *</label>
+                    <PhoneInput
+                      country="gb"
+                      enableSearch
+                      value={formData.phone}
+                      placeholder="Enter phone number"
+                      containerClass="w-full"
+                      inputClass={`
+                              !w-full
+                              !h-[48px]
+                              !pl-14
+                              !pr-4
+                              !border
+                              ${errors.phone ? '!border-red-500' : '!border-gray-300'}
+                              !rounded-md
+                              focus:!outline-none
+                              focus:!ring-2
+                              focus:!ring-primary
+                            `}
+                      buttonClass={`${errors.phone ? '!border-red-500' : '!border-gray-300'} !rounded-l-md`}
+                      dropdownClass="!z-[9999]"
+                      onChange={(value, data: any) => {
+                        const dialCode = data?.dialCode || "";
+                        const localPhone = value.replace(dialCode, "");
+
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: value,
+                          localPhone,
+                          dialCode,
+                          countryName: data?.countryCode || "",
+                        }));
+                        if (errors.phone) setErrors((prev) => ({ ...prev, phone: "" }));
+                      }}
+                    />
+                    {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                   </div>
                 </div>
               </div>
@@ -282,9 +398,9 @@ const Registration = () => {
                 <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-100 rounded-2xl p-6 mb-8">
                   <h6 className="font-semibold mb-4">Order Summary</h6>
                   <div className="space-y-3 text-sm">
-                    <div className="flex justify-between"><span>Plan</span><strong>{selectedPlan}</strong></div>
+                    <div className="flex justify-between"><span>Plan</span><strong>{plans.find(p => p.value === selectedPlan)?.name || selectedPlan}</strong></div>
                     <div className="flex justify-between"><span>Billing</span><strong>{billingCycle === 'monthly' ? 'Monthly' : 'Yearly'}</strong></div>
-                    <div className="flex justify-between border-t pt-3"><span>Total</span><strong className="text-xl">{getCurrentPrice()} / month</strong></div>
+                    <div className="flex justify-between border-t pt-3"><span>Total</span><strong className="text-xl">{getCurrentPrice()} / {billingCycle === 'monthly' ? 'month' : 'year'}</strong></div>
                   </div>
                 </div>
 
@@ -299,7 +415,7 @@ const Registration = () => {
                       <p className="text-sm text-gray-600">Your payment will be processed securely</p>
                     </div>
                   </div>
-                  
+
                   <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
                     <p className="text-sm text-gray-700">
                       <span className="font-medium">Your payment is processed through Stripe</span>, a leading secure payment platform. We don't store your card details on our servers.
