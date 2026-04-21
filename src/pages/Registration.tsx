@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Icon } from '@iconify/react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './registration.css';
 import PhoneInput from "react-phone-input-2";
-import { getPlan, createAccount, paymentIntent } from '@/store';
+import { getPlan, createAccount, paymentIntent, activateFreePlan } from '@/store';
 import notify from '@/utils/notify';
 import { Loader2 } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
@@ -22,6 +22,7 @@ const steps = [
 
 const Registration = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const incomingData = location.state;
 
   const [currentStep, setCurrentStep] = useState(incomingData?.currentStep || 0);
@@ -85,6 +86,36 @@ const Registration = () => {
     }
   };
 
+  const handlePlanActivation = async (cid: string) => {
+    // If the plan is free (price 0), activate it immediately
+    if (selectedPlanData && parseFloat(selectedPlanData.price) === 0) {
+      const freePayload = {
+        client_id: cid,
+        plan_id: selectedPlanData.id
+      };
+
+      setLoading(true);
+      await activateFreePlan(freePayload, (freeRes) => {
+        setLoading(false);
+        if (freeRes.data.status === true) {
+          navigate('/payment-success', {
+            state: {
+              plan: selectedPlanData,
+              isFree: true
+            }
+          });
+        } else {
+          notify(freeRes.data.message || "Failed to activate free plan", "error");
+        }
+      }, (freeErr) => {
+        setLoading(false);
+        notify(freeErr?.response?.data?.message || "An error occurred", "error");
+      });
+    } else {
+      setCurrentStep(3);
+    }
+  };
+
   const validateStep1 = () => {
     const newErrors: Record<string, string> = {};
     if (!businessName.trim()) newErrors.businessName = "Business Name is required";
@@ -127,6 +158,14 @@ const Registration = () => {
       if (!validateStep3()) return;
     }
     if (currentStep === 2) {
+      if (!validateStep3()) return;
+
+      // If account is already created (we have clientId), skip createAccount
+      if (clientId) {
+        setCurrentStep(3);
+        return;
+      }
+
       const payload = {
         business_name: businessName,
         business_email: businessEmail,
@@ -142,12 +181,12 @@ const Registration = () => {
       };
 
       setLoading(true);
-      await createAccount(payload, (res) => {
+      await createAccount(payload, async (res) => {
         setLoading(false);
-        if (res.data.status == true) {
-          notify(res?.data?.message, "success");
-          setClientId(res?.data?.data?.client_id);
-          setCurrentStep(currentStep + 1);
+        if (res?.data?.status == true) {
+          const newClientId = res?.data?.data?.client_id;
+          setClientId(newClientId);
+          setCurrentStep(3);
         } else {
           notify(res.data.message || "Failed to create account", "error");
         }
@@ -159,6 +198,11 @@ const Registration = () => {
     }
 
     if (currentStep === 3) {
+      if (selectedPlanData && parseFloat(selectedPlanData.price) === 0) {
+        handlePlanActivation(clientId);
+        return;
+      }
+
       const planId = selectedPlanData?.id;
       const payload = {
         client_id: clientId,
@@ -479,8 +523,8 @@ const Registration = () => {
                 {clientSecret ? (
                   <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
                     <Elements stripe={stripePromise} options={{ clientSecret }}>
-                      <StripePayment 
-                        plan={selectedPlanData} 
+                      <StripePayment
+                        plan={selectedPlanData}
                         registrationData={{
                           businessName, businessEmail, businessAddress, BusinessPhoneNo, businessCity, state, zipCode,
                           firstName, lastName, email, formData, clientId, clientSecret, currentStep, selectedPlan, billingCycle

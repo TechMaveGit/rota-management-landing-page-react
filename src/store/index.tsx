@@ -40,3 +40,15 @@ export const paymentIntent = async (payload: any, callBack: (response: AxiosResp
         callBackError(error);
     }
 };
+
+
+export const activateFreePlan = async (payload: any, callBack: (response: AxiosResponse<ApiResponse>) => void,
+    callBackError: (error: any) => void): Promise<void> => {
+    try {
+        await Service.post<ApiResponse>("onboarding/activate-free-plan", payload, (response) => {
+            callBack(response);
+        });
+    } catch (error) {
+        callBackError(error);
+    }
+};
