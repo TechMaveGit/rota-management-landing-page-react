@@ -1,8 +1,9 @@
 import { XCircle, ArrowRight, Home } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const PaymentFail = () => {
    const { state } = useLocation();
+   const navigate = useNavigate();
    let plan = state?.plan;
    let paymentForm = state?.paymentForm;
    
@@ -29,13 +30,13 @@ const PaymentFail = () => {
           </div>
           
           <div className="space-y-3">
-            <Link 
-              to="/registration"
+            <button
+              onClick={() => navigate('/registration', { state: state?.registrationData })}
               className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl py-3 px-4 flex items-center justify-center gap-2 font-medium transition-all duration-200 hover:shadow-md"
             >
               Retry Payment
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </button>
             <Link 
               to="/"
               className="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 rounded-xl py-3 px-4 flex items-center justify-center gap-2 font-medium transition-all duration-200 hover:shadow-md"

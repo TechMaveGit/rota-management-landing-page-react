@@ -7,7 +7,7 @@ import {
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const StripePayment = ({ plan }: { plan: any }) => {
+const StripePayment = ({ plan, registrationData }: { plan: any, registrationData?: any }) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -40,7 +40,13 @@ const StripePayment = ({ plan }: { plan: any }) => {
     if (error) {
       setErrorMessage(error.message || "An error occurred");
       setLoading(false);
-      navigate('/payment-fail', { state: { plan, error: error.message } });
+      navigate('/payment-fail', { 
+        state: { 
+          plan, 
+          error: error.message,
+          registrationData 
+        } 
+      });
     }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Icon } from '@iconify/react';
+import { useLocation } from 'react-router-dom';
 import './registration.css';
 import PhoneInput from "react-phone-input-2";
 import { getPlan, createAccount, paymentIntent } from '@/store';
@@ -20,20 +21,23 @@ const steps = [
 ];
 
 const Registration = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [billingCycle, setBillingCycle] = useState('monthly');
-  const [selectedPlan, setSelectedPlan] = useState('Standard Plan');
-  const [businessName, setBusinessName] = useState("")
-  const [businessEmail, setBusinessEmail] = useState("")
-  const [businessAddress, setBusinessAddress] = useState("")
-  const [BusinessPhoneNo, setBusinessPhoneNo] = useState("")
-  const [businessCity, setBusinessCity] = useState("")
-  const [state, setState] = useState("")
-  const [zipCode, setZipCode] = useState("")
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [formData, setFormData] = useState({
+  const location = useLocation();
+  const incomingData = location.state;
+
+  const [currentStep, setCurrentStep] = useState(incomingData?.currentStep || 0);
+  const [billingCycle, setBillingCycle] = useState(incomingData?.billingCycle || 'monthly');
+  const [selectedPlan, setSelectedPlan] = useState(incomingData?.selectedPlan || 'Standard Plan');
+  const [businessName, setBusinessName] = useState(incomingData?.businessName || "")
+  const [businessEmail, setBusinessEmail] = useState(incomingData?.businessEmail || "")
+  const [businessAddress, setBusinessAddress] = useState(incomingData?.businessAddress || "")
+  const [BusinessPhoneNo, setBusinessPhoneNo] = useState(incomingData?.BusinessPhoneNo || "")
+  const [businessCity, setBusinessCity] = useState(incomingData?.businessCity || "")
+  const [state, setState] = useState(incomingData?.state || "")
+  const [zipCode, setZipCode] = useState(incomingData?.zipCode || "")
+  const [firstName, setFirstName] = useState(incomingData?.firstName || "")
+  const [lastName, setLastName] = useState(incomingData?.lastName || "")
+  const [email, setEmail] = useState(incomingData?.email || "")
+  const [formData, setFormData] = useState(incomingData?.formData || {
     phone: "",
     localPhone: "",
     dialCode: "",
@@ -42,8 +46,8 @@ const Registration = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [clientId, setClientId] = useState("");
-  const [clientSecret, setClientSecret] = useState("");
+  const [clientId, setClientId] = useState(incomingData?.clientId || "");
+  const [clientSecret, setClientSecret] = useState(incomingData?.clientSecret || "");
 
   const selectedPlanData = useMemo(() => {
     return plans.find(p => p.name.trim() === selectedPlan.trim());
@@ -475,7 +479,13 @@ const Registration = () => {
                 {clientSecret ? (
                   <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
                     <Elements stripe={stripePromise} options={{ clientSecret }}>
-                      <StripePayment plan={selectedPlanData} />
+                      <StripePayment 
+                        plan={selectedPlanData} 
+                        registrationData={{
+                          businessName, businessEmail, businessAddress, BusinessPhoneNo, businessCity, state, zipCode,
+                          firstName, lastName, email, formData, clientId, clientSecret, currentStep, selectedPlan, billingCycle
+                        }}
+                      />
                     </Elements>
                   </div>
                 ) : (
