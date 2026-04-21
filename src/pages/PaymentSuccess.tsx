@@ -1,12 +1,61 @@
-import { CheckCircle, ArrowRight, Receipt, Home } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { CheckCircle, ArrowRight, Home, Receipt, Calendar, CreditCard } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const PaymentSuccess = () => {
-  const { state } = useLocation();
-  let plan = state?.plan;
-  let paymentForm = state?.paymentForm;
-  console.log(plan, "planplan")
-  console.log(paymentForm, "paymentFormpaymentForm")
+  const { state, search } = useLocation();
+  const navigate = useNavigate();
+  const [plan, setPlan] = useState<any>(state?.plan);
+  const [paymentForm, setPaymentForm] = useState<any>(state?.paymentForm);
+  const [paymentIntent, setPaymentIntent] = useState<string | null>(null);
+
+  useEffect(() => {
+    // 1. Check URL parameters for Stripe payment intent and status
+    const params = new URLSearchParams(search);
+    const pi = params.get('payment_intent');
+    const status = params.get('redirect_status');
+
+    if (pi) setPaymentIntent(pi);
+
+    // If status is failed, redirect to payment-fail
+    if (status === 'failed') {
+      navigate('/payment-fail', { state: { plan: plan || state?.plan, error: 'Payment failed during processing' } });
+      return;
+    }
+
+    const qPlanId = params.get('plan_id');
+    const qPlanName = params.get('plan_name');
+    const qCurrency = params.get('currency');
+    const qPrice = params.get('price');
+    const qDuration = params.get('duration');
+
+    // If query params are present, construct the plan object
+    if (qPlanName && !plan) {
+      setPlan({
+        id: qPlanId,
+        name: qPlanName,
+        currency: qCurrency,
+        price: qPrice,
+        duration: qDuration
+      });
+    }
+
+    // 2. Fallback: If no plan in state or URL, try localStorage
+    if (!plan && !qPlanName) {
+      const saved = localStorage.getItem('last_purchase');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setPlan(parsed.plan);
+        } catch (e) {
+          console.error("Error parsing saved plan", e);
+        }
+      }
+    }
+  }, [search, plan]);
+
+  console.log(state, "planplanplan");
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -25,42 +74,44 @@ const PaymentSuccess = () => {
             <h1 className="text-2xl font-semibold text-gray-900 mb-2">
               Payment Successful!
             </h1>
-            {plan ? <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm">
               Your subscription has been activated successfully. Thank you for your purchase.
             </p>
-              : <p className="text-gray-500 text-sm">
-                Your payment was successfully completed. Thank you for choosing us.
-              </p>
-            }
           </div>
-          <div className="bg-gray-50 rounded-xl border border-gray-100 p-4 mb-6 space-y-3">
-            {plan ? <> <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500">Plan</span>
-              <span className="text-sm font-medium text-gray-900">{plan?.name}</span>
+
+          <div className="bg-gray-50 rounded-xl border border-gray-100 p-5 mb-6 space-y-4">
+            <div className="flex justify-between items-center pb-3 border-b border-gray-200/60">
+              <div className="flex items-center gap-2 text-gray-500">
+                <Receipt className="w-4 h-4" />
+                <span className="text-sm">Plan</span>
+              </div>
+              <span className="text-sm font-semibold text-gray-900">{plan?.name || 'Standard Plan'}</span>
             </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Validity</span>
-                <span className="text-sm font-medium text-gray-900">{plan?.duration || plan?.period}</span>
-              </div> </>
-              : <>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Reciever</span>
-                  <span className="text-sm font-medium text-gray-900">{paymentForm?.recieverName}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">JobTitle</span>
-                  <span className="text-sm font-medium text-gray-900">{paymentForm?.jobTitle}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Currency</span>
-                  <span className="text-sm font-medium text-gray-900">{paymentForm?.currency}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Amount</span>
-                  <span className="text-sm font-medium text-gray-900">{paymentForm?.amount}</span>
-                </div>
-              </>
-            }
+
+            <div className="flex justify-between items-center pb-3 border-b border-gray-200/60">
+              <div className="flex items-center gap-2 text-gray-500">
+                <Calendar className="w-4 h-4" />
+                <span className="text-sm">Billing Period</span>
+              </div>
+              <span className="text-sm font-medium text-gray-900">{plan?.duration || plan?.period || 'Annually'}</span>
+            </div>
+
+            <div className="flex justify-between items-center pb-3 border-b border-gray-200/60">
+              <div className="flex items-center gap-2 text-gray-500">
+                <CreditCard className="w-4 h-4" />
+                <span className="text-sm">Amount Paid</span>
+              </div>
+              <span className="text-sm font-bold text-green-600">
+                {plan?.currency || '£'}{plan?.price || '299'}
+              </span>
+            </div>
+
+            {paymentIntent && (
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Transaction ID</span>
+                <span className="text-[10px] font-mono text-gray-400">{paymentIntent.slice(0, 15)}...</span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-3">
@@ -70,8 +121,7 @@ const PaymentSuccess = () => {
               rel="noopener noreferrer"
               className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-3 px-4 flex items-center justify-center gap-2 font-medium transition-all duration-200 hover:shadow-md"
             >
-              <Home className="w-4 h-4" />
-              Go to Dashboard
+              Continue to login
               <ArrowRight className="w-4 h-4" />
             </a>
           </div>

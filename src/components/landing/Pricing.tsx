@@ -68,6 +68,7 @@ const Pricing = () => {
     return () => ctx.revert();
   }, [plans]);
 
+
   return (
     <section
       id="pricing"
@@ -96,7 +97,7 @@ const Pricing = () => {
           ref={cardsRef}
           className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start"
         >
-          {plans.map((plan, index) => {
+          {plans?.map((plan, index) => {
             const isPopular = index === 1;
             return (
               <div

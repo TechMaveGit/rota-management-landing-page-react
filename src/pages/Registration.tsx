@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Icon } from '@iconify/react';
 import './registration.css';
 import PhoneInput from "react-phone-input-2";
-import { getPlan } from '@/store';
+import { getPlan, createAccount, paymentIntent } from '@/store';
 import notify from '@/utils/notify';
+import { Loader2 } from 'lucide-react';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import StripePayment from '@/components/registration/StripePayment';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const steps = [
   { id: 1, title: 'Business Info', desc: 'Basic business details' },
@@ -35,23 +41,31 @@ const Registration = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [plans, setPlans] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [clientId, setClientId] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+
+  const selectedPlanData = useMemo(() => {
+    return plans.find(p => p.name.trim() === selectedPlan.trim());
+  }, [plans, selectedPlan]);
 
 
   useEffect(() => {
     handleFetchPlans()
   }, [])
 
+
+
+
   const handleFetchPlans = async () => {
     await getPlan((status, res) => {
       if (res?.data?.status == true) {
-        console.log(res?.data, "-----");
         const apiPlans = res?.data?.data || [];
         setPlans(apiPlans);
         if (apiPlans.length > 0) {
           setSelectedPlan(apiPlans[0].name);
         }
       } else {
-        console.log(res?.data?.message, "error")
       }
     }, (err) => {
       notify(err?.response?.data?.message, "error")
@@ -100,13 +114,73 @@ const Registration = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const nextStep = () => {
+
+  const nextStep = async () => {
     if (currentStep === 0) {
       if (!validateStep1()) return;
     }
     if (currentStep === 2) {
       if (!validateStep3()) return;
     }
+    if (currentStep === 2) {
+      const payload = {
+        business_name: businessName,
+        business_email: businessEmail,
+        business_address: businessAddress,
+        business_phone: BusinessPhoneNo,
+        city: businessCity,
+        state: state,
+        zip_code: zipCode,
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        phone: formData.phone
+      };
+
+      setLoading(true);
+      await createAccount(payload, (res) => {
+        setLoading(false);
+        if (res.data.status == true) {
+          notify(res?.data?.message, "success");
+          setClientId(res?.data?.data?.client_id);
+          setCurrentStep(currentStep + 1);
+        } else {
+          notify(res.data.message || "Failed to create account", "error");
+        }
+      }, (err) => {
+        setLoading(false);
+        notify(err?.response?.data?.message || "An error occurred", "error");
+      });
+      return;
+    }
+
+    if (currentStep === 3) {
+      const planId = selectedPlanData?.id;
+      const payload = {
+        client_id: clientId,
+        plan_id: planId
+      };
+
+      setLoading(true);
+      await paymentIntent(payload, async (res) => {
+        setLoading(false);
+        if (res.data.status === true) {
+          const secret = res.data?.clientSecret;
+          if (secret) {
+            setClientSecret(secret);
+          } else {
+            notify("Payment session not found", "error");
+          }
+        } else {
+          notify(res.data.message || "Failed to initiate payment", "error");
+        }
+      }, (err) => {
+        setLoading(false);
+        notify(err?.response?.data?.message || "An error occurred", "error");
+      });
+      return;
+    }
+
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -119,7 +193,7 @@ const Registration = () => {
   };
 
   const getCurrentPrice = () => {
-    const plan = plans.find(p => p.name === selectedPlan);
+    const plan = selectedPlanData;
     if (!plan) return '£0';
     return `${plan.currency}${plan.price}`;
   };
@@ -393,44 +467,52 @@ const Registration = () => {
                   <h6 className="font-semibold mb-4">Order Summary</h6>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between"><span>Plan</span><strong>{selectedPlan}</strong></div>
-                    <div className="flex justify-between"><span>Billing</span><strong>{plans.find(p => p.name === selectedPlan)?.duration || 'Annually'}</strong></div>
-                    <div className="flex justify-between border-t pt-3"><span>Total</span><strong className="text-xl">{getCurrentPrice()} / {plans.find(p => p.name === selectedPlan)?.duration === 'Annually' ? 'year' : 'month'}</strong></div>
+                    <div className="flex justify-between"><span>Billing</span><strong>{selectedPlanData?.duration || 'Annually'}</strong></div>
+                    <div className="flex justify-between border-t pt-3"><span>Total</span><strong className="text-xl">{getCurrentPrice()} / {selectedPlanData?.duration === 'Annually' ? 'year' : 'month'}</strong></div>
                   </div>
                 </div>
 
-                {/* Stripe Payment Notification */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full flex items-center justify-center">
-                      <Icon icon="mdi:lock-check" className="text-blue-600 text-2xl" />
-                    </div>
-                    <div>
-                      <h5 className="font-semibold text-gray-900">Secure Payment with Stripe</h5>
-                      <p className="text-sm text-gray-600">Your payment will be processed securely</p>
-                    </div>
+                {clientSecret ? (
+                  <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <StripePayment plan={selectedPlanData} />
+                    </Elements>
                   </div>
+                ) : (
+                  /* Stripe Payment Notification */
+                  <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full flex items-center justify-center">
+                        <Icon icon="mdi:lock-check" className="text-blue-600 text-2xl" />
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-900">Secure Payment with Stripe</h5>
+                        <p className="text-sm text-gray-600">Your payment will be processed securely</p>
+                      </div>
+                    </div>
 
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
-                    <p className="text-sm text-gray-700">
-                      <span className="font-medium">Your payment is processed through Stripe</span>, a leading secure payment platform. We don't store your card details on our servers.
-                    </p>
-                  </div>
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
+                      <p className="text-sm text-gray-700">
+                        <span className="font-medium">Your payment is processed through Stripe</span>, a leading secure payment platform. We don't store your card details on our servers.
+                      </p>
+                    </div>
 
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <Icon icon="mdi:shield-check" className="text-green-600 text-2xl mx-auto mb-2" />
-                      <p className="text-xs font-medium text-gray-700">Secure</p>
-                    </div>
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <Icon icon="mdi:credit-card" className="text-blue-600 text-2xl mx-auto mb-2" />
-                      <p className="text-xs font-medium text-gray-700">Multiple Cards</p>
-                    </div>
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <Icon icon="mdi:lightning-bolt" className="text-yellow-600 text-2xl mx-auto mb-2" />
-                      <p className="text-xs font-medium text-gray-700">Instant</p>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <Icon icon="mdi:shield-check" className="text-green-600 text-2xl mx-auto mb-2" />
+                        <p className="text-xs font-medium text-gray-700">Secure</p>
+                      </div>
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <Icon icon="mdi:credit-card" className="text-blue-600 text-2xl mx-auto mb-2" />
+                        <p className="text-xs font-medium text-gray-700">Multiple Cards</p>
+                      </div>
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <Icon icon="mdi:lightning-bolt" className="text-yellow-600 text-2xl mx-auto mb-2" />
+                        <p className="text-xs font-medium text-gray-700">Instant</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -454,7 +536,7 @@ const Registration = () => {
         </div>
 
         {/* Navigation Buttons */}
-        {currentStep < 4 && (
+        {currentStep < 4 && !clientSecret && (
           <div className="border-t bg-white p-6 flex justify-end gap-4 sticky bottom-0">
             {currentStep > 0 && (
               <button
@@ -468,7 +550,9 @@ const Registration = () => {
               onClick={nextStep}
               className="px-10 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md flex items-center gap-2"
             >
-              {currentStep === 3 ? 'Subscribe & Start →' : 'Continue →'}
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+              ) : currentStep === 3 ? 'Subscribe & Start →' : 'Continue →'}
             </button>
           </div>
         )}
