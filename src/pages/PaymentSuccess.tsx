@@ -31,13 +31,20 @@ const PaymentSuccess = () => {
 
     // If query params are present, construct the plan object
     if (qPlanName && !plan) {
-      setPlan({
+      const planData = {
         id: qPlanId,
         name: qPlanName,
         currency: qCurrency,
         price: qPrice,
         duration: qDuration
-      });
+      };
+      setPlan(planData);
+      
+      // Save to localStorage as well to ensure persistence on refresh
+      localStorage.setItem('last_purchase', JSON.stringify({
+        plan: planData,
+        timestamp: new Date().toISOString()
+      }));
     }
 
     // 2. Fallback: If no plan in state or URL, try localStorage
@@ -52,7 +59,12 @@ const PaymentSuccess = () => {
         }
       }
     }
-  }, [search, plan]);
+
+    // 3. Clean up the URL to hide query parameters
+    if (params.toString()) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [search, plan, navigate, state]);
 
   console.log(state, "planplanplan");
 

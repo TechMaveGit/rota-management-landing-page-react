@@ -33,7 +33,7 @@ const StripePayment = ({ plan, registrationData }: { plan: any, registrationData
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/payment-success?plan_id=${plan.id}&plan_name=${encodeURIComponent(plan.name)}&currency=${encodeURIComponent(plan.currency)}&price=${plan.price}&duration=${encodeURIComponent(plan.duration || plan.period || 'Annually')}`,
+        return_url: `${window.location.origin}/payment-success`,
       },
     });
 
