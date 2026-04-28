@@ -59,7 +59,7 @@ const Hero = () => {
             </h1>
 
             <p className="hero-subtitle text-lg text-muted-foreground mb-8 leading-relaxed">
-              RotaFlow helps care organizations manage rotas, track attendance, 
+              Zavro helps care organizations manage rotas, track attendance, 
               handle payroll, and ensure compliance — all in one powerful platform.
             </p>
 
@@ -100,7 +100,7 @@ const Hero = () => {
                 </div>
                 <div className="flex-1 mx-4">
                   <div className="bg-muted rounded-md h-6 max-w-xs flex items-center px-3">
-                    <span className="text-xs text-muted-foreground">app.rotaflow.com/dashboard</span>
+                    <span className="text-xs text-muted-foreground">app.zavro.com/dashboard</span>
                   </div>
                 </div>
               </div>

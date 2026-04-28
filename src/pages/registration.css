@@ -49,7 +49,7 @@ body {
   width: 44px;
   height: 44px;
   border-radius: 8px;
-  background: #ef2b2d;
+  background: #00a299;
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -57,7 +57,7 @@ body {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  box-shadow: 0 10px 22px rgba(239, 43, 45, 0.18);
+  box-shadow: 0 10px 22px rgba(0, 162, 153, 0.18);
   flex-shrink: 0;
 }
 
@@ -175,10 +175,10 @@ body {
 }
 
 .step-sidebar-item.active .step-item-number {
-  background: #ef2b2d;
+  background: #00a299;
   color: #fff;
-  border-color: #ef2b2d;
-  box-shadow: 0 4px 12px rgba(239, 43, 45, 0.25);
+  border-color: #00a299;
+  box-shadow: 0 4px 12px rgba(0, 162, 153, 0.25);
 }
 
 .step-sidebar-item.completed .step-item-number {
@@ -345,8 +345,8 @@ select.form-control {
 .form-control:focus,
 textarea.form-control:focus,
 select.form-control:focus {
-  border-color: #1d72f2;
-  box-shadow: 0 0 0 4px rgba(29, 114, 242, 0.1);
+  border-color: #00a299;
+  box-shadow: 0 0 0 4px rgba(0, 162, 153, 0.1);
   background: #fff;
   outline: none;
 }
@@ -464,10 +464,10 @@ textarea.form-control {
 }
 
 .select-card input:checked + label {
-  border-color: #1d72f2;
-  background: linear-gradient(135deg, #1d72f2 0%, #1a5fc4 100%);
+  border-color: #00a299;
+  background: linear-gradient(135deg, #00a299 0%, #008b8b 100%);
   color: #fff;
-  box-shadow: 0 20px 40px rgba(29, 114, 242, 0.18);
+  box-shadow: 0 20px 40px rgba(0, 162, 153, 0.18);
 }
 
 .select-card input:checked + label .title,
@@ -492,7 +492,7 @@ textarea.form-control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #ef2b2d;
+  color: #00a299;
   font-size: 18px;
   padding: 2px;
   margin-bottom: 14px;
@@ -582,7 +582,7 @@ textarea.form-control {
   align-items: center;
   justify-content: center;
   padding: 10px 22px;
-  background: #ef2b2d;
+  background: #00a299;
   color: #fff;
   border-radius: 10px;
   font-weight: 700;
@@ -597,7 +597,7 @@ textarea.form-control {
 
 .select-card input:checked + label .plan-action {
   background: #fff;
-  color: #1d72f2;
+  color: #00a299;
 }
 
 /* ===== PAYMENT OPTIONS ===== */
@@ -615,7 +615,7 @@ textarea.form-control {
 }
 
 .option-grid.payment-options .select-card input:checked + label .card-icon {
-  background: #1d72f2;
+  background: #00a299;
   color: #fff;
 }
 
@@ -855,9 +855,9 @@ span.description {
 }
 
 .default-btn.next-step {
-  background: #ef2b2d;
+  background: #00a299;
   color: #fff;
-  border-color: #ef2b2d;
+  border-color: #00a299;
 }
 
 .default-btn.next-step:hover {

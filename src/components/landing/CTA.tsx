@@ -79,7 +79,7 @@ const CTA = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="font-semibold text-base px-8 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 bg-transparent"
+                className="font-semibold text-base px-8 border-primary-foreground/30 text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10 bg-transparent"
               >
                 Book a Demo
               </Button>

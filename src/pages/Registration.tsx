@@ -252,15 +252,11 @@ const Registration = () => {
       <div className="w-1/4 bg-[#fcfcfc] border-r border-gray-200 flex flex-col">
         <div className="p-8">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-11 h-11 bg-red-600 text-white rounded-md flex items-center justify-center font-bold text-xl">RF</div>
-            <div>
-              <h1 className="text-xl font-bold text-black">RotaFlow</h1>
-              <p className="text-xs text-gray-500 -mt-1">Care Management</p>
-            </div>
+            <img src="/logo.png" alt="Zavro" className="h-10 w-auto" />
           </div>
 
           <div className="mb-6">
-            <h2 className="caret-text">Create Your RotaFlow Account</h2>
+            <h2 className="caret-text">Create Your Zavro Account</h2>
             <p className="text-sm text-gray-600 mt-2">Complete these 5 simple steps to set up your business.</p>
           </div>
 
@@ -278,8 +274,8 @@ const Registration = () => {
                   }`}
               >
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 flex-shrink-0
-                  ${index === currentStep ? 'bg-green-600 text-white border-green-600' :
-                    index < currentStep ? 'bg-green-600 text-white border-green-600' : 'border-gray-300 text-gray-500'}`}>
+                  ${index === currentStep ? 'bg-primary text-white border-primary' :
+                    index < currentStep ? 'bg-primary text-white border-primary' : 'border-gray-300 text-gray-500'}`}>
                   {index + 1}
                 </div>
                 <div className="text-left">
@@ -300,7 +296,7 @@ const Registration = () => {
             </div>
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-green-600 transition-all duration-300"
+                className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
@@ -576,11 +572,11 @@ const Registration = () => {
                 <img src="src/assets/app-screens/successful.png" alt="Success" className="mx-auto mb-8 w-60" />
 
                 <h5 className="text-4xl font-bold mb-3">🎉 You're All Set!</h5>
-                <h6 className="text-2xl text-gray-700 mb-4">Your RotaFlow account is ready.</h6>
+                <h6 className="text-2xl text-gray-700 mb-4">Your Zavro account is ready.</h6>
                 <p className="text-gray-600 max-w-md mx-auto mb-10">Start managing your care team and scheduling with ease now.</p>
                 <button
                   onClick={() => window.location.href = '/'}
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold text-lg px-12 py-4 rounded-2xl inline-flex items-center gap-3"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg px-12 py-4 rounded-2xl inline-flex items-center gap-3"
                 >
                   Go to Dashboard →
                 </button>
@@ -602,7 +598,7 @@ const Registration = () => {
             )}
             <button
               onClick={nextStep}
-              className="px-10 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md flex items-center gap-2"
+              className="px-10 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-md flex items-center gap-2"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin mr-2" />

@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 0 72% 51%;
+    --primary: 176 100% 32%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217 91% 60%;
@@ -30,25 +30,25 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 0 72% 51%;
+    --ring: 176 100% 32%;
 
     --radius: 0.75rem;
 
     /* RotaFlow Custom tokens */
     --blue: 217 91% 60%;
     --blue-foreground: 0 0% 100%;
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(220 14% 98%) 50%, hsl(0 72% 98%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(220 14% 98%) 50%, hsl(176 100% 95%) 100%);
     --gradient-section: linear-gradient(180deg, hsl(220 14% 98%) 0%, hsl(0 0% 100%) 100%);
-    --gradient-cta: linear-gradient(135deg, hsl(0 72% 51%) 0%, hsl(0 80% 42%) 100%);
+    --gradient-cta: linear-gradient(135deg, hsl(176 100% 36%) 0%, hsl(176 100% 28%) 100%);
     --gradient-blue: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%);
     --shadow-card: 0 1px 3px 0 hsl(220 14% 10% / 0.1), 0 1px 2px -1px hsl(220 14% 10% / 0.1);
     --shadow-card-hover: 0 10px 15px -3px hsl(220 14% 10% / 0.1), 0 4px 6px -4px hsl(220 14% 10% / 0.1);
-    --shadow-button: 0 4px 14px 0 hsl(0 72% 51% / 0.35);
+    --shadow-button: 0 4px 14px 0 hsl(176 100% 32% / 0.35);
     --shadow-blue: 0 4px 14px 0 hsl(217 91% 60% / 0.35);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 0 72% 51%;
+    --sidebar-primary: 176 100% 32%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
@@ -66,7 +66,7 @@
     --popover: 222 47% 10%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 0 72% 55%;
+    --primary: 176 100% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217 91% 55%;
@@ -83,14 +83,14 @@
 
     --border: 222 30% 20%;
     --input: 222 30% 20%;
-    --ring: 0 72% 55%;
+    --ring: 176 100% 40%;
 
     --blue: 217 91% 55%;
     --blue-foreground: 0 0% 100%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 0 72% 55%;
+    --sidebar-primary: 176 100% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
@@ -265,10 +265,10 @@
 }
 
 .select-card input:checked+label {
-  border-color: #1d72f2;
-  background: #1d72f2;
+  border-color: #00a299;
+  background: #00a299;
   color: #fff;
-  box-shadow: 0 20px 40px rgba(29, 114, 242, 0.18);
+  box-shadow: 0 20px 40px rgba(0, 162, 153, 0.18);
 }
 
 .select-card input:checked+label .title,
@@ -293,7 +293,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #ef2b2d;
+  color: #00a299;
   font-size: 18px;
   padding: 2px;
 }
@@ -350,7 +350,7 @@
       position: absolute;
       left: 0;
       top: 0;
-      color: #1d72f2;
+      color: #00a299;
       font-size: 0.85rem;
       line-height: 1.8;
     } */
@@ -393,7 +393,7 @@
   align-items: center;
   justify-content: center;
   padding: 10px 22px;
-  background: #ef2b2d;
+  background: #00a299;
   color: #fff;
   border-radius: 10px;
   font-weight: 700;
@@ -404,14 +404,14 @@
 
 .select-card input:checked+label .plan-action {
   background: #fff;
-  color: #1d72f2;
+  color: #00a299;
 }
 
 .select-card .small-muted {
   display: inline-block;
   margin-top: 12px;
   font-size: 0.88rem;
-  color: #1d72f2;
+  color: #00a299;
   font-weight: 600;
 }
 
@@ -574,7 +574,7 @@
 
 .next-step {
   border-radius: 8px;
-  background-color: #ef2b2d;
+  background-color: #00a299;
 }
 
 .select2-container--default.select2-container--focus .select2-selection--single,
@@ -754,7 +754,7 @@ textarea.form-control {
 }
 
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
-  background-color: #ef2b2d !important;
+  background-color: #00a299 !important;
 }
 
 
@@ -769,7 +769,7 @@ textarea.form-control {
   width: 44px;
   height: 44px;
   border-radius: 8px;
-  background: #ef2b2d;
+  background: #00a299;
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -777,7 +777,7 @@ textarea.form-control {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  box-shadow: 0 10px 22px rgba(239, 43, 45, 0.18);
+  box-shadow: 0 10px 22px rgba(0, 162, 153, 0.18);
 }
 
 .rf-logo-text {
@@ -1151,8 +1151,8 @@ span.description {
 
 
 .option-grid.payment-options .select-card input:checked+label {
-  background: #ef2b2d08;
-  border-color: #ef2b2d1f;
+  background: #00a29908;
+  border-color: #00a2991f;
   box-shadow: none;
 }
 
