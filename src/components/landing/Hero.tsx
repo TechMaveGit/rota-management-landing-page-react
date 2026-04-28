@@ -38,7 +38,7 @@ const Hero = () => {
     >
       {/* Subtle grid background */}
       <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" />
-      
+
       {/* Gradient orbs */}
       <div className="absolute top-40 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
@@ -59,7 +59,7 @@ const Hero = () => {
             </h1>
 
             <p className="hero-subtitle text-lg text-muted-foreground mb-8 leading-relaxed">
-              Zavro helps care organizations manage rotas, track attendance, 
+              Zavro helps care organizations manage rotas, track attendance,
               handle payroll, and ensure compliance — all in one powerful platform.
             </p>
 
@@ -150,7 +150,7 @@ const Hero = () => {
                   <div className="flex items-end gap-2 h-24">
                     {[65, 45, 80, 55, 70, 90, 60].map((height, i) => (
                       <div key={i} className="flex-1 flex flex-col gap-1">
-                        <div 
+                        <div
                           className={`rounded-t-sm ${i % 2 === 0 ? 'bg-primary' : 'bg-secondary'}`}
                           style={{ height: `${height}%` }}
                         />

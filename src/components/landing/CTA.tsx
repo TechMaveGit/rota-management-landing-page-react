@@ -63,7 +63,7 @@ const CTA = () => {
             </h2>
             <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto mb-8">
               Join thousands of teams who've simplified their rota management
-              with RotaFlow. Start your free trial today.
+              with Zavro. Start your free trial today.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
@@ -79,7 +79,7 @@ const CTA = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="font-semibold text-base px-8 border-primary-foreground/30 text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10 bg-transparent"
+                className="font-semibold text-base px-8 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary bg-transparent"
               >
                 Book a Demo
               </Button>
