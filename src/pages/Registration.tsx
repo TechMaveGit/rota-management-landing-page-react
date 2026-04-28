@@ -198,10 +198,10 @@ const Registration = () => {
     }
 
     if (currentStep === 3) {
-      if (selectedPlanData && parseFloat(selectedPlanData.price) === 0) {
-        handlePlanActivation(clientId);
-        return;
-      }
+      // if (selectedPlanData && parseFloat(selectedPlanData.price) === 0) {
+      //   handlePlanActivation(clientId);
+      //   return;
+      // }
 
       const planId = selectedPlanData?.id;
       const payload = {
@@ -213,6 +213,14 @@ const Registration = () => {
       await paymentIntent(payload, async (res) => {
         setLoading(false);
         if (res.data.status === true) {
+          if (res?.data?.type == "free") {
+            return navigate('/payment-success', {
+              state: {
+                plan: selectedPlanData,
+                isFree: true
+              }
+            });
+          }
           const secret = res.data?.clientSecret;
           if (secret) {
             setClientSecret(secret);
