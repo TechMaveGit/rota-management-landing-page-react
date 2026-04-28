@@ -33,7 +33,7 @@ export const createAccount = async (payload: any, callBack: (response: AxiosResp
 export const paymentIntent = async (payload: any, callBack: (response: AxiosResponse<ApiResponse>) => void,
     callBackError: (error: any) => void): Promise<void> => {
     try {
-        await Service.post<ApiResponse>("onboarding/create-payment-intent", payload, (response) => {
+        await Service.post<ApiResponse>("transaction/create", payload, (response) => {
             callBack(response);
         });
     } catch (error) {

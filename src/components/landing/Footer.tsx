@@ -34,20 +34,17 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <a href="#" className="inline-block mb-4">
-              <span className="text-2xl font-extrabold">
-                <span className="text-primary">Rota</span>
-                <span className="text-background">Flow</span>
-              </span>
+            <a href="#" className="inline-flex mb-4 bg-white px-3 py-2 rounded-xl">
+              <img src="/logo.png" alt="Zavro" className="h-10 w-auto" />
             </a>
             <p className="text-background/70 mb-6 max-w-xs">
-              Smart rota management software that helps teams schedule better,
+              Zavro smarter social care management software that helps teams schedule better,
               work smarter, and save time.
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-background/70">
                 <Mail className="h-4 w-4" />
-                <span className="text-sm">hello@rotaflow.com</span>
+                <span className="text-sm">hello@zavro.com</span>
               </div>
               <div className="flex items-center gap-3 text-background/70">
                 <Phone className="h-4 w-4" />
@@ -129,7 +126,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="pt-8 border-t border-background/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-background/50 text-sm">
-            © 2024 RotaFlow. All rights reserved.
+            © 2024 Zavro. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <a

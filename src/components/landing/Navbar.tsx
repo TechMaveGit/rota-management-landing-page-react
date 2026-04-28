@@ -31,16 +31,8 @@ const Navbar = () => {
         }`}
     >
       <div className="container flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">RF</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold text-foreground leading-tight">
-              RotaFlow
-            </span>
-            <span className="text-[10px] text-muted-foreground -mt-1">Care Management</span>
-          </div>
+        <a href="#" className="flex items-center">
+          <img src="/logo.png" alt="Zavro" className="h-12 w-auto" />
         </a>
 
         {/* Desktop Navigation */}
