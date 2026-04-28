@@ -34,7 +34,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <a href="#" className="inline-flex mb-4 bg-white px-3 py-2 rounded-xl">
+            <a href="#" className="inline-flex mb-4 bg-white px-3 py-2 rounded-md">
               <img src="/logo.png" alt="Zavro" className="h-10 w-auto" />
             </a>
             <p className="text-background/70 mb-6 max-w-xs">
