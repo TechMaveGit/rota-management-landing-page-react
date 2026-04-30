@@ -163,7 +163,7 @@ const FloatingElements = () => {
           </h2>
           <p className="text-muted-foreground text-lg mb-8">
             From staff scheduling to payroll — manage hundreds of care workers 
-            and shifts seamlessly with RotaFlow's smart automation.
+            and shifts seamlessly with Zavro's smart automation.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Button size="lg" className="rounded-full">

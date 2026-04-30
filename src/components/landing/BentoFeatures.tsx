@@ -56,7 +56,7 @@ const BentoFeatures = () => {
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6 tracking-tight">
             Boost Speed and Control Your<br />
-            Staff Operations with RotaFlow
+            Staff Operations with Zavro
           </h2>
           <p className="text-muted-foreground text-lg">
             Exploring the powerful features of our dashboard for enhanced speed, control, 

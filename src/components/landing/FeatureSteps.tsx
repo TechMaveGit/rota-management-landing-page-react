@@ -8,14 +8,14 @@ gsap.registerPlugin(ScrollTrigger);
 const steps = [
   {
     step: 1,
-    title: "Create Your Rota Template",
+    title: "Create Your Zavro Template",
     description: "Set up recurring shift patterns with customizable templates. Define shift times, required staff count, and qualifications needed.",
     icon: Calendar,
   },
   {
     step: 2,
     title: "Assign Staff Automatically",
-    description: "Let RotaFlow match available staff to shifts based on skills, preferences, and availability. Manual overrides always available.",
+    description: "Let Zavro match available staff to shifts based on skills, preferences, and availability. Manual overrides always available.",
     icon: Users,
   },
   {
@@ -81,7 +81,7 @@ const FeatureSteps = () => {
             How It Works
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6 tracking-tight">
-            Streamline Your Rota Management<br />
+            Streamline Your Zavro Management<br />
             <span className="text-muted-foreground">in 4 Simple Steps</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">

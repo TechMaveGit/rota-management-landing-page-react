@@ -110,7 +110,7 @@ const Testimonials = () => {
             Trusted by teams running complex care schedules
           </h2>
           <p className="mt-5 text-base text-muted-foreground md:text-lg">
-            Agencies and care providers use RotaFlow to simplify shift planning, reduce manual work, and keep
+            Agencies and care providers use Zavro to simplify shift planning, reduce manual work, and keep
             every team member on the same page.
           </p>
           <Button className="mt-8 shadow-button">

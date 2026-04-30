@@ -32,7 +32,7 @@ const Signup = () => {
       setIsLoading(false);
       toast({
         title: "Account Created",
-        description: "Welcome to RotaFlow! Your 7-day trial has started.",
+        description: "Welcome to Zavro! Your 7-day trial has started.",
       });
     }, 1500);
   };
@@ -53,7 +53,7 @@ const Signup = () => {
             Start your free trial today
           </h2>
           <p className="text-muted-foreground mb-8">
-            Experience the power of intelligent rota management with RotaFlow.
+            Experience the power of intelligent rota management with Zavro.
           </p>
           
           <div className="space-y-4">
@@ -77,7 +77,7 @@ const Signup = () => {
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">R</span>
             </div>
-            <span className="text-2xl font-bold text-foreground">RotaFlow</span>
+            <span className="text-2xl font-bold text-foreground">Zavro</span>
           </Link>
 
           <div className="mb-8">

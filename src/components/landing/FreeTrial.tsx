@@ -65,7 +65,7 @@ const FreeTrial = () => {
               Start with a 7-day free trial of Pro.
             </h2>
             <p className="text-white/80 text-lg mb-8 leading-relaxed">
-              Unlock the full power of RotaFlow's rota management. Create unlimited schedules, 
+              Unlock the full power of Zavro's rota management. Create unlimited schedules, 
               track attendance, manage your entire team, and see why care organizations trust us.
             </p>
             <div className="flex flex-wrap gap-4">

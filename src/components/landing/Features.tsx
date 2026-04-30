@@ -17,7 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
 const features = [
   {
     icon: Calendar,
-    title: "Rota Scheduling",
+    title: "Zavro Scheduling",
     description: "Create and manage complex staff rotas with our intuitive drag-and-drop scheduler.",
     color: "primary",
   },
@@ -122,7 +122,7 @@ const Features = () => {
             Everything You Need to Manage Care
           </h2>
           <p className="text-muted-foreground text-lg">
-            From scheduling to payroll, RotaFlow has all the tools to run your care organization efficiently.
+            From scheduling to payroll, Zavro has all the tools to run your care organization efficiently.
           </p>
         </div>
 

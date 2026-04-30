@@ -89,7 +89,7 @@ const DashboardPreview = () => {
                       <div className="w-6 h-6 rounded bg-primary flex items-center justify-center">
                         <span className="text-[10px] text-primary-foreground font-bold">RF</span>
                       </div>
-                      <span className="text-xs font-semibold">RotaFlow</span>
+                      <span className="text-xs font-semibold">Zavro</span>
                     </div>
                     <div className="space-y-1.5">
                       {["Dashboard", "Schedule", "Staff", "Clients", "Reports"].map((item, i) => (

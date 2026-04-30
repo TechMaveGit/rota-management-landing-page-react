@@ -16,7 +16,7 @@ const steps = [
   {
     number: "02",
     title: "Configure your scheduling rules",
-    description: "Set shift patterns, availability rules, skill requirements, and compliance constraints. RotaFlow handles the complexity.",
+    description: "Set shift patterns, availability rules, skill requirements, and compliance constraints. Zavro handles the complexity.",
     icon: Settings,
     illustration: "config",
   },
@@ -169,7 +169,7 @@ const HowItWorks = () => {
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="bg-background rounded-xl shadow-lg p-4 w-full max-w-[200px]">
                       <div className="flex items-center gap-2 mb-3 border-b border-border pb-2">
-                        <span className="italic text-xs">RotaFlow</span>
+                        <span className="italic text-xs">Zavro</span>
                         <span className="font-bold text-xs">Publish</span>
                         <span className="ml-auto text-muted-foreground">🔗</span>
                       </div>

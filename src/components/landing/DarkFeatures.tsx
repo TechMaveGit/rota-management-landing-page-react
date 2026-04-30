@@ -98,7 +98,7 @@ const DarkFeatures = () => {
             Complete rota management
           </h2>
           <p className="text-white/60 text-lg">
-            RotaFlow is purpose-built to handle the complexity of care sector scheduling.
+            Zavro is purpose-built to handle the complexity of care sector scheduling.
           </p>
         </div>
 
