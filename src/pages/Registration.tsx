@@ -410,23 +410,21 @@ const Registration = () => {
                         )}
                         <span className="card-icon">💎</span>
                         <span className="title">{plan.name}</span>
-                        <span className="plan-summary">{plan.highlight?.[0] || 'A great plan for your needs'}</span>
-                        <ul className="plan-features">
-                          {plan.permission?.slice(0, 5).map((feature: string, i: number) => (
-                            <li key={i}>
-                              <Icon icon="iconamoon:check-fill" />
-                              {feature}
+                        <ul className="plan-features flex-grow mt-4">
+                          {plan.highlight?.map((hl: string, i: number) => (
+                            <li key={i} className="plan-highlight-text">
+                              <Icon icon="iconamoon:check-fill" className="flex-shrink-0" />
+                              <span className="font-bold">{hl}</span>
                             </li>
                           ))}
                         </ul>
-                        <div className="plan-footer">
+                        <div className="plan-footer mt-auto pt-4">
                           <div>
                             <span className="price">
                               {plan.currency}{plan.price}
                             </span>
                             <span className="CTA-subtext">/{plan.duration === 'Annually' ? 'year' : 'month'}</span>
                           </div>
-                          <span className="plan-action">Continue</span>
                         </div>
                       </label>
                     </div>

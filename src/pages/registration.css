@@ -434,28 +434,37 @@ textarea.form-control {
 
 /* ===== PLAN CARDS ===== */
 .option-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
   margin-bottom: 24px;
+  justify-content: center;
 }
 
 .select-card input {
   display: none;
 }
 
+.select-card {
+  display: flex;
+  flex-direction: column;
+}
+
 .select-card label {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 420px;
+  width: 300px;
+  height: 100%;
+  min-height: 480px;
   padding: 28px;
-  border-radius: 12px;
+  border-radius: 20px;
   border: 1px solid #e6ebf2;
   background: #fff;
   cursor: pointer;
-  transition: 0.25s ease, transform 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 10px 30px rgba(15, 111, 97, 0.04);
+  position: relative;
 }
 
 .select-card label:hover {
@@ -472,6 +481,7 @@ textarea.form-control {
 
 .select-card input:checked + label .title,
 .select-card input:checked + label .plan-summary,
+.select-card input:checked + label .plan-highlight-text,
 .select-card input:checked + label .plan-features li,
 .select-card input:checked + label .price,
 .select-card input:checked + label .plan-action,
@@ -531,6 +541,16 @@ textarea.form-control {
   font-size: 13px;
 }
 
+.plan-highlight-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #00a299;
+  margin-bottom: 6px;
+}
+
 .select-card .plan-features {
   list-style: none;
   padding: 0;
@@ -543,7 +563,7 @@ textarea.form-control {
   position: relative;
   margin-bottom: 12px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   font-size: 13px;
 }

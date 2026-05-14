@@ -3,12 +3,13 @@ import { Star, Users, Clock, TrendingUp, Calendar, CheckCircle } from "lucide-re
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const FloatingElements = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-
+  const navigate = useNavigate()
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
@@ -162,11 +163,11 @@ const FloatingElements = () => {
             <span className="text-primary">Growth Right Away</span>
           </h2>
           <p className="text-muted-foreground text-lg mb-8">
-            From staff scheduling to payroll — manage hundreds of care workers 
+            From staff scheduling to payroll — manage hundreds of care workers
             and shifts seamlessly with Zavro's smart automation.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <Button size="lg" className="rounded-full">
+            <Button onClick={() => navigate("/registration")} size="lg" className="rounded-full">
               Start Free Trial
             </Button>
             <Button size="lg" variant="outline" className="rounded-full">

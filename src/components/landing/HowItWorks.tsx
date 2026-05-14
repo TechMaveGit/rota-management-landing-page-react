@@ -110,7 +110,7 @@ const HowItWorks = () => {
                         <div className="h-2 bg-primary/30 rounded w-1/2"></div>
                       </div>
                       <div className="mt-2 bg-primary text-primary-foreground text-[10px] py-1 px-2 rounded text-center">
-                        Get Started →
+                        Start Free Trial →
                       </div>
                     </div>
                   </div>

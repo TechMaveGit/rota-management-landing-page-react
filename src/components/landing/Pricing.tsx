@@ -95,14 +95,14 @@ const Pricing = () => {
 
         <div
           ref={cardsRef}
-          className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start"
+          className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch"
         >
           {plans?.map((plan, index) => {
             const isPopular = index === 1;
             return (
               <div
                 key={index}
-                className={`pricing-card relative p-6 rounded-2xl border transition-all ${isPopular
+                className={`pricing-card relative p-6 rounded-2xl border transition-all flex flex-col ${isPopular
                   ? "bg-secondary text-secondary-foreground border-secondary shadow-blue scale-105 z-10"
                   : "bg-card border-border hover:border-primary/20 hover:shadow-card"
                   }`}
@@ -118,22 +118,19 @@ const Pricing = () => {
                     }`} />
                 </div>
 
-                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                <p className={`text-sm mb-6 ${isPopular ? "text-white/70" : "text-muted-foreground"}`}>
-                  {plan.highlight?.[0] || plan.type}
-                </p>
+                <h3 className="text-xl font-bold mb-4">{plan.name}</h3>
 
-                <ul className="space-y-3 mb-6">
-                  {plan.permission?.map((feature: string, i: number) => (
+                <ul className="space-y-3 mb-6 flex-grow">
+                  {plan.highlight?.map((item: string, i: number) => (
                     <li key={i} className="flex items-start gap-2 text-sm">
                       <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 ${isPopular ? "text-white" : "text-primary"
                         }`} />
-                      <span>{feature}</span>
+                      <span className="font-semibold">{item}</span>
                     </li>
                   ))}
                 </ul>
 
-                <div className="mb-6">
+                <div className="mb-6 mt-auto">
                   <span className="text-4xl font-bold">
                     {plan.currency}{plan.price}
                   </span>
@@ -150,7 +147,7 @@ const Pricing = () => {
                     }`}
                   variant={index === plans.length - 1 ? "outline" : "default"}
                 >
-                  {"Get Started"}
+                  {"Start Free Trial"}
                   <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </Button>
               </div>
