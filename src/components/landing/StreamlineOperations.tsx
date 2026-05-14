@@ -183,12 +183,7 @@ const StreamlineOperations = () => {
           </div>
         </div>
 
-        <div className="text-center mt-12">
-          <Button size="lg" className="group">
-            Request a Demo
-            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </div>
+
       </div>
     </section>
   );

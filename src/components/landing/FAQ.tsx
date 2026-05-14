@@ -41,7 +41,7 @@ const faqs = [
   },
   {
     question: "Can I try Zavro before committing?",
-    answer: "Yes! We offer a 14-day free trial with full access to all features. No credit card required. Our team is available to give you a personalized demo and answer any questions during your trial period."
+    answer: "Yes! We offer a 14-day free trial with full access to all features. No credit card required. Our team is available to answer any questions during your trial period."
   },
 ];
 

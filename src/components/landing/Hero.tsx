@@ -68,14 +68,6 @@ const Hero = () => {
                 Start Free Trial
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="font-semibold px-6 group"
-              >
-                <Play className="mr-2 h-4 w-4 fill-primary text-primary group-hover:scale-110 transition-transform" />
-                Watch Demo
-              </Button>
             </div>
 
             <div className="hero-features flex flex-wrap gap-x-6 gap-y-2">

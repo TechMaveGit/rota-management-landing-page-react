@@ -76,13 +76,6 @@ const CTA = () => {
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="font-semibold text-base px-8 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary bg-transparent"
-              >
-                Book a Demo
-              </Button>
             </div>
 
             <div className="flex flex-wrap justify-center gap-6">

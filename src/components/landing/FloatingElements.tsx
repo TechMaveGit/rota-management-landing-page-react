@@ -170,9 +170,6 @@ const FloatingElements = () => {
             <Button onClick={() => navigate("/registration")} size="lg" className="rounded-full">
               Start Free Trial
             </Button>
-            <Button size="lg" variant="outline" className="rounded-full">
-              Book a Demo
-            </Button>
           </div>
         </div>
 
