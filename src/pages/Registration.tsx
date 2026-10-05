@@ -186,6 +186,9 @@ const Registration = () => {
         if (res?.data?.status == true) {
           const newClientId = res?.data?.data?.client_id;
           setClientId(newClientId);
+          if (newClientId) {
+            localStorage.setItem('onboarding_client_id', newClientId);
+          }
           setCurrentStep(3);
         } else {
           notify(res.data.message || "Failed to create account", "error");
@@ -213,6 +216,9 @@ const Registration = () => {
       await paymentIntent(payload, async (res) => {
         setLoading(false);
         if (res.data.status === true) {
+          if (res?.data?.transaction?.id) {
+            localStorage.setItem('last_transaction_id', res.data.transaction.id);
+          }
           if (res?.data?.type == "free") {
             return navigate('/payment-success', {
               state: {

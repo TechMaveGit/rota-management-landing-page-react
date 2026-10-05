@@ -53,3 +53,13 @@ export const activateFreePlan = async (payload: any, callBack: (response: AxiosR
         callBackError(error);
     }
 };
+
+export const checkTransactionStatus = async (payload: any, callBack?: (response: AxiosResponse<ApiResponse>) => void, callBackError?: (error: any) => void): Promise<void> => {
+    try {
+        await Service.post<ApiResponse>("transaction/status", payload, (response) => {
+            if (callBack) callBack(response);
+        });
+    } catch (error) {
+        if (callBackError) callBackError(error);
+    }
+};

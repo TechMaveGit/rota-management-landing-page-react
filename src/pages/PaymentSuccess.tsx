@@ -1,6 +1,7 @@
 import { CheckCircle, ArrowRight, Home, Receipt, Calendar, CreditCard } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { checkTransactionStatus } from "@/store";
 
 const PaymentSuccess = () => {
   const { state, search } = useLocation();
@@ -21,6 +22,18 @@ const PaymentSuccess = () => {
     if (status === 'failed') {
       navigate('/payment-fail', { state: { plan: plan || state?.plan, error: 'Payment failed during processing' } });
       return;
+    }
+
+    // Call backend to confirm and sync transaction status & payment entry in DB
+    const savedTxId = localStorage.getItem('last_transaction_id');
+    const savedClientId = localStorage.getItem('onboarding_client_id');
+    
+    if (savedTxId || savedClientId || pi) {
+      checkTransactionStatus({
+        transaction_id: savedTxId || undefined,
+        client_id: savedClientId || undefined,
+        payment_intent: pi || undefined
+      });
     }
 
     const qPlanId = params.get('plan_id');
