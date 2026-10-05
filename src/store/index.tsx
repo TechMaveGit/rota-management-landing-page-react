@@ -8,6 +8,7 @@ interface ApiResponse<T = any> {
     clientSecret?: string;
     type?: string;
 }
+
 export const getPlan = async (callBack: (status: number, response: AxiosResponse<ApiResponse>) => void,
     callBackError: (error: any) => void): Promise<void> => {
     try {

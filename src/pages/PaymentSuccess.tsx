@@ -149,6 +149,14 @@ const PaymentSuccess = () => {
               Continue to login
               <ArrowRight className="w-4 h-4" />
             </a>
+
+            <Link
+              to="/"
+              className="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 rounded-xl py-3 px-4 flex items-center justify-center gap-2 font-medium transition-all duration-200 hover:shadow-md"
+            >
+              <Home className="w-4 h-4 text-gray-600" />
+              Back to Dashboard
+            </Link>
           </div>
         </div>
 
