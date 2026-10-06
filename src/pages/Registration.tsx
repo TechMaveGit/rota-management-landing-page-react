@@ -5,12 +5,51 @@ import './registration.css';
 import PhoneInput from "react-phone-input-2";
 import { getPlan, createAccount, paymentIntent, activateFreePlan } from '@/store';
 import notify from '@/utils/notify';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Rocket, BarChart3, Crown, Check, ArrowLeft, ArrowRight } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import StripePayment from '@/components/registration/StripePayment';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+const getPlanMeta = (plan: any, index: number) => {
+  const name = (plan?.name || "").toLowerCase();
+  const type = (plan?.type || "").toLowerCase();
+
+  if (name.includes("starter") || type.includes("free") || parseFloat(plan?.price) === 0) {
+    return {
+      icon: Rocket,
+      iconBg: "bg-purple-100/70 text-purple-600 border border-purple-200/60",
+    };
+  } else if (name.includes("growth") || type.includes("advance")) {
+    return {
+      icon: BarChart3,
+      iconBg: "bg-teal-100/70 text-teal-600 border border-teal-200/60",
+    };
+  } else if (name.includes("advance") || type.includes("premium")) {
+    return {
+      icon: Crown,
+      iconBg: "bg-amber-100/70 text-amber-600 border border-amber-200/60",
+    };
+  }
+
+  if (index === 0) {
+    return {
+      icon: Rocket,
+      iconBg: "bg-purple-100/70 text-purple-600 border border-purple-200/60",
+    };
+  } else if (index === 1) {
+    return {
+      icon: BarChart3,
+      iconBg: "bg-teal-100/70 text-teal-600 border border-teal-200/60",
+    };
+  } else {
+    return {
+      icon: Crown,
+      iconBg: "bg-amber-100/70 text-amber-600 border border-amber-200/60",
+    };
+  }
+};
 
 const steps = [
   { id: 1, title: 'Business Info', desc: 'Basic business details' },
@@ -54,13 +93,13 @@ const Registration = () => {
     return plans.find(p => p.name.trim() === selectedPlan.trim());
   }, [plans, selectedPlan]);
 
+  const sortedPlans = useMemo(() => {
+    return [...plans].sort((a, b) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
+  }, [plans]);
 
   useEffect(() => {
-    handleFetchPlans()
-  }, [])
-
-
-
+    handleFetchPlans();
+  }, []);
 
   const handleFetchPlans = async () => {
     await getPlan((status, res) => {
@@ -68,14 +107,16 @@ const Registration = () => {
         const apiPlans = res?.data?.data || [];
         setPlans(apiPlans);
         if (apiPlans.length > 0) {
-          setSelectedPlan(apiPlans[0].name);
+          const sorted = [...apiPlans].sort((a: any, b: any) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
+          const growthPlan = sorted.find((p: any) => p.name.toLowerCase().includes('growth'));
+          setSelectedPlan(growthPlan ? growthPlan.name : sorted[0].name);
         }
       } else {
       }
     }, (err) => {
-      notify(err?.response?.data?.message, "error")
-    })
-  }
+      notify(err?.response?.data?.message, "error");
+    });
+  };
 
 
 
@@ -305,8 +346,9 @@ const Registration = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="border-b bg-white px-8 py-4 flex items-center justify-between sticky top-0 z-10">
           <div className="flex-1 w-full max-w-4xl mx-auto">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="font-medium">Step {currentStep + 1} of {steps.length}</span>
+            <div className="flex justify-between items-center text-sm mb-2">
+              <span className="font-semibold text-gray-700">Step {currentStep + 1} of {steps.length}</span>
+              <span className="font-bold text-gray-400">{Math.round(progressPercentage)}%</span>
             </div>
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
@@ -393,48 +435,116 @@ const Registration = () => {
 
             {/* Step 2: Plan Selection */}
             {currentStep === 1 && (
-              <div>
-                <h4 className="text-2xl font-semibold mb-2">Choose Your Plan</h4>
-                <p className="text-gray-600 mb-6">Select the plan that best fits your needs.</p>
+              <div className="py-2 animate-in fade-in duration-300">
+                <div className="text-center max-w-2xl mx-auto mb-10">
+                  <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">
+                    Choose Your Plan
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    Select the plan that best fits your care business needs.
+                  </p>
+                </div>
 
-                <div className="option-grid">
-                  {plans?.map((plan, index) => (
-                    <div key={plan.id} className="select-card">
-                      <input
-                        type="radio"
-                        id={`plan_${plan.id}`}
-                        name="plan_name"
-                        value={plan.name}
-                        checked={selectedPlan === plan.name}
-                        onChange={() => setSelectedPlan(plan.name)}
-                      />
-                      <label className="plan-card" htmlFor={`plan_${plan.id}`}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+                  {sortedPlans?.map((plan, index) => {
+                    const isSelected = selectedPlan.trim() === plan.name.trim();
+                    const meta = getPlanMeta(plan, index);
+                    const PlanIcon = meta.icon;
+
+                    return (
+                      <div
+                        key={plan.id}
+                        onClick={() => setSelectedPlan(plan.name)}
+                        className={`group relative rounded-3xl p-7 flex flex-col justify-between cursor-pointer transition-all duration-300 transform bg-white ${
+                          isSelected
+                            ? 'border-2 border-[#009688] shadow-2xl shadow-teal-500/15 -translate-y-2 ring-4 ring-teal-500/10'
+                            : 'border border-gray-200/90 shadow-sm hover:border-[#009688]/60 hover:shadow-xl hover:-translate-y-1.5'
+                        }`}
+                      >
+                        {/* Top Badge: Plan Type directly from API */}
                         {plan.type && (
-                          <span className={`plan-badge badge-color-${index % 4}`}>
+                          <div
+                            className={`absolute -top-3.5 right-6 px-4 py-1 rounded-full text-[11px] font-bold tracking-wide shadow-md ${
+                              plan.type.toLowerCase() === 'advance'
+                                ? 'bg-[#009688] text-white shadow-teal-600/30'
+                                : plan.type.toLowerCase() === 'premium'
+                                ? 'bg-amber-500 text-white shadow-amber-500/30'
+                                : 'bg-emerald-600 text-white shadow-emerald-600/30'
+                            }`}
+                          >
                             {plan.type}
-                          </span>
-                        )}
-                        <span className="card-icon">💎</span>
-                        <span className="title">{plan.name}</span>
-                        <ul className="plan-features flex-grow mt-4">
-                          {plan.highlight?.map((hl: string, i: number) => (
-                            <li key={i} className="plan-highlight-text">
-                              <Icon icon="iconamoon:check-fill" className="flex-shrink-0" />
-                              <span className="font-bold">{hl}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="plan-footer mt-auto pt-4">
-                          <div>
-                            <span className="price">
-                              {plan.currency}{plan.price}
-                            </span>
-                            <span className="CTA-subtext">/{plan.duration === 'Annually' ? 'year' : 'month'}</span>
                           </div>
+                        )}
+
+                        <div>
+                          {/* Unique Plan Icon */}
+                          <div
+                            className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm transition-transform duration-300 group-hover:scale-110 ${meta.iconBg}`}
+                          >
+                            <PlanIcon className="w-7 h-7" />
+                          </div>
+
+                          {/* Title */}
+                          <h4 className="text-2xl font-bold text-gray-900 mb-1.5">
+                            {plan.name}
+                          </h4>
+
+                          {/* Quantities from API */}
+                          {(plan.care_worker_qty || plan.staff_qty) && (
+                            <p className="text-xs text-gray-500 font-medium mb-6">
+                              {plan.care_worker_qty ? `Up to ${plan.care_worker_qty} Care Workers` : ''}
+                              {plan.care_worker_qty && plan.staff_qty ? ' • ' : ''}
+                              {plan.staff_qty ? `${plan.staff_qty} Staff` : ''}
+                            </p>
+                          )}
+
+                          {/* Features List directly from API highlight */}
+                          <ul className="space-y-3.5 mb-8">
+                            {plan.highlight?.map((hl: string, i: number) => (
+                              <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
+                                <div className="w-5 h-5 rounded-full bg-teal-50 flex items-center justify-center flex-shrink-0 text-[#009688] mt-0.5">
+                                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                                </div>
+                                <span className="font-medium text-gray-700 leading-snug">
+                                  {hl}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      </label>
-                    </div>
-                  ))}
+
+                        <div>
+                          {/* Price & Duration directly from API */}
+                          <div className="pt-5 border-t border-gray-100 mb-6">
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-3xl font-extrabold text-gray-900">
+                                {plan.currency || '£'}{plan.price}
+                              </span>
+                              <span className="text-xs text-gray-500 font-medium">
+                                /{plan.duration?.toLowerCase() === 'annually' ? 'year' : 'month'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Choose Plan CTA button */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedPlan(plan.name);
+                            }}
+                            className={`w-full py-3.5 px-4 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+                              isSelected
+                                ? 'bg-[#009688] hover:bg-[#008376] text-white shadow-lg shadow-teal-600/25 ring-2 ring-[#009688]'
+                                : 'bg-white hover:bg-teal-50 text-[#009688] border-2 border-[#009688]'
+                            }`}
+                          >
+                            {isSelected ? 'Selected ✓' : 'Choose Plan'}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -599,22 +709,32 @@ const Registration = () => {
 
         {/* Navigation Buttons */}
         {currentStep < 4 && !clientSecret && (
-          <div className="border-t bg-white p-6 flex justify-end gap-4 sticky bottom-0">
+          <div className="border-t bg-white p-6 flex justify-end gap-3 sticky bottom-0 z-10">
             {currentStep > 0 && (
               <button
+                type="button"
                 onClick={prevStep}
-                className="px-8 py-3 border border-gray-300 rounded-md font-medium hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-200 hover:border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-2 shadow-sm transition-all text-sm"
               >
+                <ArrowLeft className="w-4 h-4" />
                 Back
               </button>
             )}
             <button
+              type="button"
               onClick={nextStep}
-              className="px-10 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-md flex items-center gap-2"
+              className="px-8 py-2.5 bg-[#009688] hover:bg-[#008376] text-white font-semibold rounded-xl flex items-center gap-2 shadow-md shadow-teal-600/20 transition-all text-sm"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              ) : currentStep === 3 ? 'Subscribe & Start →' : 'Continue →'}
+              ) : currentStep === 3 ? (
+                'Subscribe & Start →'
+              ) : (
+                <>
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </div>
         )}

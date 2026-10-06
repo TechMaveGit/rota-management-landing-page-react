@@ -1,12 +1,13 @@
 import Service from "@/service";
 import { AxiosResponse } from "axios";
 
-interface ApiResponse<T = any> {
+export interface ApiResponse<T = any> {
     data: T;
     status: boolean;
     message?: string;
     clientSecret?: string;
     type?: string;
+    transaction?: any;
 }
 
 export const getPlan = async (callBack: (status: number, response: AxiosResponse<ApiResponse>) => void,
