@@ -27,7 +27,7 @@ const PaymentSuccess = () => {
     // Call backend to confirm and sync transaction status & payment entry in DB
     const savedTxId = localStorage.getItem('last_transaction_id');
     const savedClientId = localStorage.getItem('onboarding_client_id');
-    
+
     if (savedTxId || savedClientId || pi) {
       checkTransactionStatus({
         transaction_id: savedTxId || undefined,
@@ -52,7 +52,7 @@ const PaymentSuccess = () => {
         duration: qDuration
       };
       setPlan(planData);
-      
+
       // Save to localStorage as well to ensure persistence on refresh
       localStorage.setItem('last_purchase', JSON.stringify({
         plan: planData,
@@ -154,8 +154,7 @@ const PaymentSuccess = () => {
               to="/"
               className="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 rounded-xl py-3 px-4 flex items-center justify-center gap-2 font-medium transition-all duration-200 hover:shadow-md"
             >
-              <Home className="w-4 h-4 text-gray-600" />
-              Back to Dashboard
+              Back to Home
             </Link>
           </div>
         </div>
