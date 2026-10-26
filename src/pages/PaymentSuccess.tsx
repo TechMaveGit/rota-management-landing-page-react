@@ -42,8 +42,8 @@ const PaymentSuccess = () => {
     const qPrice = params.get('price');
     const qDuration = params.get('duration');
 
-    // If query params are present, construct the plan object
-    if (qPlanName && !plan) {
+    // If query params are present, always use them (most reliable source after Stripe redirect)
+    if (qPlanName) {
       const planData = {
         id: qPlanId,
         name: qPlanName,
@@ -61,7 +61,7 @@ const PaymentSuccess = () => {
     }
 
     // 2. Fallback: If no plan in state or URL, try localStorage
-    if (!plan && !qPlanName) {
+    if (!state?.plan && !qPlanName) {
       const saved = localStorage.getItem('last_purchase');
       if (saved) {
         try {
@@ -77,7 +77,8 @@ const PaymentSuccess = () => {
     if (params.toString()) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [search, plan, navigate, state]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount to prevent re-redirect after setPlan()
 
   console.log(state, "planplanplan");
 
@@ -127,7 +128,7 @@ const PaymentSuccess = () => {
                 <span className="text-sm">Amount Paid</span>
               </div>
               <span className="text-sm font-bold text-green-600">
-                {plan?.currency || '£'}{plan?.price || '299'}
+                {plan?.currency ?? '£'}{plan?.price ?? '—'}
               </span>
             </div>
 

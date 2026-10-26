@@ -71,6 +71,7 @@ const Registration = () => {
   const [businessEmail, setBusinessEmail] = useState(incomingData?.businessEmail || "")
   const [businessAddress, setBusinessAddress] = useState(incomingData?.businessAddress || "")
   const [BusinessPhoneNo, setBusinessPhoneNo] = useState(incomingData?.BusinessPhoneNo || "")
+  const [businessPhoneData, setBusinessPhoneData] = useState(incomingData?.businessPhoneData || { dialCode: '', countryCode: '' })
   const [businessCity, setBusinessCity] = useState(incomingData?.businessCity || "")
   const [state, setState] = useState(incomingData?.state || "")
   const [zipCode, setZipCode] = useState(incomingData?.zipCode || "")
@@ -166,10 +167,23 @@ const Registration = () => {
       newErrors.businessEmail = "Invalid email format";
     }
     if (!businessAddress.trim()) newErrors.businessAddress = "Business Address is required";
-    if (!BusinessPhoneNo.trim()) newErrors.BusinessPhoneNo = "Business Phone No is required";
+    // Phone: strip dial code prefix and check remaining digits >= 6
+    if (!BusinessPhoneNo) {
+      newErrors.BusinessPhoneNo = "Business Phone No is required";
+    } else {
+      const digitsOnly = BusinessPhoneNo.replace(/\D/g, '');
+      const dialDigits = (businessPhoneData.dialCode || '').replace(/\D/g, '');
+      const localDigits = digitsOnly.length - dialDigits.length;
+      if (localDigits < 6) newErrors.BusinessPhoneNo = "Enter a valid phone number";
+    }
     if (!businessCity.trim()) newErrors.businessCity = "City is required";
     if (!state.trim()) newErrors.state = "State is required";
-    if (!zipCode.trim()) newErrors.zipCode = "Zip Code is required";
+    // Zip/Postal code: allow letters, digits, spaces, hyphens (UK, US, CA, IN etc.)
+    if (!zipCode.trim()) {
+      newErrors.zipCode = "Zip / Postal Code is required";
+    } else if (!/^[A-Za-z0-9][A-Za-z0-9\s\-]{1,9}$/.test(zipCode.trim())) {
+      newErrors.zipCode = "Enter a valid postal code (e.g. SW1A 1AA, 110001, 12345)";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -396,12 +410,33 @@ const Registration = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Business Phone No *</label>
-                    <input type="tel" value={BusinessPhoneNo} onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9+]/g, "");
-                      setBusinessPhoneNo(value);
-                      if (errors.BusinessPhoneNo) setErrors((prev) => ({ ...prev, BusinessPhoneNo: "" }));
-                    }}
-                      className={`w-full border ${errors.BusinessPhoneNo ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="+44 7123 456789" />
+                    <PhoneInput
+                      country="gb"
+                      enableSearch
+                      value={BusinessPhoneNo}
+                      placeholder="Enter business phone"
+                      containerClass="w-full"
+                      inputClass={`
+                        !w-full
+                        !h-[48px]
+                        !pl-14
+                        !pr-4
+                        !border
+                        ${errors.BusinessPhoneNo ? '!border-red-500' : '!border-gray-300'}
+                        !rounded-sm
+                        focus:!outline-none
+                        focus:!ring-2
+                        focus:!ring-blue-100
+                        focus:!border-blue-500
+                      `}
+                      buttonClass={`${errors.BusinessPhoneNo ? '!border-red-500' : '!border-gray-300'} !rounded-l-sm`}
+                      dropdownClass="!z-[9999]"
+                      onChange={(value, data: any) => {
+                        setBusinessPhoneNo(value);
+                        setBusinessPhoneData({ dialCode: data?.dialCode || '', countryCode: data?.countryCode || '' });
+                        if (errors.BusinessPhoneNo) setErrors((prev) => ({ ...prev, BusinessPhoneNo: '' }));
+                      }}
+                    />
                     {errors.BusinessPhoneNo && <p className="text-red-500 text-xs mt-1">{errors.BusinessPhoneNo}</p>}
                   </div>
                   <div>
@@ -422,11 +457,21 @@ const Registration = () => {
                     {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code *</label>
-                    <input value={zipCode} onChange={(e) => {
-                      setZipCode(e.target.value);
-                      if (errors.zipCode) setErrors((prev) => ({ ...prev, zipCode: "" }));
-                    }} type="number" id="businessZipCode" className={`w-full border ${errors.zipCode ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="please enter your zip code" />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Zip / Postal Code *</label>
+                    <input
+                      value={zipCode}
+                      onChange={(e) => {
+                        // Allow letters, digits, spaces, hyphens only — max 10 chars
+                        const val = e.target.value.replace(/[^A-Za-z0-9\s\-]/g, '').slice(0, 10);
+                        setZipCode(val);
+                        if (errors.zipCode) setErrors((prev) => ({ ...prev, zipCode: '' }));
+                      }}
+                      type="text"
+                      id="businessZipCode"
+                      maxLength={10}
+                      className={`w-full border ${errors.zipCode ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`}
+                      placeholder="e.g. SW1A 1AA or 110001"
+                    />
                     {errors.zipCode && <p className="text-red-500 text-xs mt-1">{errors.zipCode}</p>}
                   </div>
                 </div>

@@ -30,10 +30,21 @@ const StripePayment = ({ plan, registrationData }: { plan: any, registrationData
       timestamp: new Date().toISOString()
     }));
 
+    // Build return URL with plan details as query params so PaymentSuccess
+    // can display them even after Stripe's full-page redirect clears React state
+    const returnParams = new URLSearchParams();
+    if (plan?.id) returnParams.set('plan_id', plan.id);
+    if (plan?.name) returnParams.set('plan_name', plan.name);
+    if (plan?.currency) returnParams.set('currency', plan.currency);
+    if (plan?.price !== undefined && plan?.price !== null) returnParams.set('price', String(plan.price));
+    if (plan?.duration) returnParams.set('duration', plan.duration);
+
+    const returnUrl = `${window.location.origin}/payment-success?${returnParams.toString()}`;
+
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/payment-success`,
+        return_url: returnUrl,
       },
     });
 
