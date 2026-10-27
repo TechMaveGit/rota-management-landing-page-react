@@ -1,4 +1,4 @@
-import { CheckCircle, ArrowRight, Home, Receipt, Calendar, CreditCard } from "lucide-react";
+import { CheckCircle, ArrowRight, Receipt, Calendar, CreditCard, Loader2 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { checkTransactionStatus } from "@/store";
@@ -7,34 +7,16 @@ const PaymentSuccess = () => {
   const { state, search } = useLocation();
   const navigate = useNavigate();
   const [plan, setPlan] = useState<any>(state?.plan);
-  const [paymentForm, setPaymentForm] = useState<any>(state?.paymentForm);
   const [paymentIntent, setPaymentIntent] = useState<string | null>(null);
+  const [isVerified, setIsVerified] = useState(Boolean(state?.isFree));
 
   useEffect(() => {
-    // 1. Check URL parameters for Stripe payment intent and status
+    let isMounted = true;
     const params = new URLSearchParams(search);
     const pi = params.get('payment_intent');
-    const status = params.get('redirect_status');
+    const redirectStatus = params.get('redirect_status');
 
     if (pi) setPaymentIntent(pi);
-
-    // If status is failed, redirect to payment-fail
-    if (status === 'failed') {
-      navigate('/payment-fail', { state: { plan: plan || state?.plan, error: 'Payment failed during processing' } });
-      return;
-    }
-
-    // Call backend to confirm and sync transaction status & payment entry in DB
-    const savedTxId = localStorage.getItem('last_transaction_id');
-    const savedClientId = localStorage.getItem('onboarding_client_id');
-
-    if (savedTxId || savedClientId || pi) {
-      checkTransactionStatus({
-        transaction_id: savedTxId || undefined,
-        client_id: savedClientId || undefined,
-        payment_intent: pi || undefined
-      });
-    }
 
     const qPlanId = params.get('plan_id');
     const qPlanName = params.get('plan_name');
@@ -42,45 +24,106 @@ const PaymentSuccess = () => {
     const qPrice = params.get('price');
     const qDuration = params.get('duration');
 
-    // If query params are present, always use them (most reliable source after Stripe redirect)
+    let resolvedPlan = state?.plan;
     if (qPlanName) {
-      const planData = {
+      resolvedPlan = {
         id: qPlanId,
         name: qPlanName,
         currency: qCurrency,
         price: qPrice,
         duration: qDuration
       };
-      setPlan(planData);
-
-      // Save to localStorage as well to ensure persistence on refresh
-      localStorage.setItem('last_purchase', JSON.stringify({
-        plan: planData,
-        timestamp: new Date().toISOString()
-      }));
+      setPlan(resolvedPlan);
     }
 
-    // 2. Fallback: If no plan in state or URL, try localStorage
     if (!state?.plan && !qPlanName) {
       const saved = localStorage.getItem('last_purchase');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          setPlan(parsed.plan);
+          resolvedPlan = parsed.plan;
+          setPlan(resolvedPlan);
         } catch (e) {
           console.error("Error parsing saved plan", e);
         }
       }
     }
 
-    // 3. Clean up the URL to hide query parameters
-    if (params.toString()) {
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount to prevent re-redirect after setPlan()
+    const saveVerifiedPurchase = () => {
+      if (resolvedPlan) {
+        localStorage.setItem('last_purchase', JSON.stringify({
+          plan: resolvedPlan,
+          timestamp: new Date().toISOString()
+        }));
+      }
+      if (params.toString()) {
+        window.history.replaceState(window.history.state, document.title, window.location.pathname);
+      }
+    };
 
-  console.log(state, "planplanplan");
+    // Free plans reach this page only after the activation API succeeds.
+    if (state?.isFree) {
+      saveVerifiedPurchase();
+      return () => { isMounted = false; };
+    }
+
+    const failVerification = (message: string) => {
+      if (!isMounted) return;
+      navigate('/payment-fail', {
+        replace: true,
+        state: { plan: resolvedPlan, error: message }
+      });
+    };
+
+    // Never infer success from the route name or cached plan details.
+    if (redirectStatus !== 'succeeded') {
+      failVerification('Payment was not completed. Please check your card details and try again.');
+      return () => { isMounted = false; };
+    }
+
+    const savedTxId = localStorage.getItem('last_transaction_id');
+    const savedClientId = localStorage.getItem('onboarding_client_id');
+
+    if (!savedTxId && !savedClientId && !pi) {
+      failVerification('Unable to verify this payment. Please try again.');
+      return () => { isMounted = false; };
+    }
+
+    checkTransactionStatus({
+      // The intent returned by Stripe identifies this exact attempt. Stored IDs
+      // are fallbacks only and may refer to an earlier attempt.
+      transaction_id: pi ? undefined : (savedTxId || undefined),
+      client_id: pi ? undefined : (savedClientId || undefined),
+      payment_intent: pi || undefined
+    }, (response) => {
+      const result = response.data as { is_subscribed?: boolean };
+      if (result?.is_subscribed === true) {
+        if (isMounted) {
+          saveVerifiedPurchase();
+          setIsVerified(true);
+        }
+      } else {
+        failVerification('Your payment could not be verified and the plan was not activated.');
+      }
+    }, () => {
+      failVerification('Unable to verify this payment. Please try again.');
+    });
+
+    return () => { isMounted = false; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!isVerified) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
+          <h1 className="text-xl font-semibold text-gray-900">Verifying payment</h1>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we confirm your transaction.</p>
+        </div>
+      </div>
+    );
+  }
 
 
   return (

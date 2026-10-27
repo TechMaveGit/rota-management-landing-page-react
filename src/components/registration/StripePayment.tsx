@@ -5,12 +5,10 @@ import {
   useElements
 } from '@stripe/react-stripe-js';
 import { Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 const StripePayment = ({ plan, registrationData }: { plan: any, registrationData?: any }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -22,13 +20,18 @@ const StripePayment = ({ plan, registrationData }: { plan: any, registrationData
       return;
     }
 
+    setErrorMessage(null);
     setLoading(true);
 
-    // Save plan info to localStorage because the redirect will clear React state
-    localStorage.setItem('last_purchase', JSON.stringify({
-      plan: plan,
-      timestamp: new Date().toISOString()
-    }));
+    // Explicitly submit the Payment Element first. This makes Stripe display its
+    // field-level validation messages without treating missing card details as a
+    // failed payment or leaving the checkout page.
+    const { error: validationError } = await elements.submit();
+    if (validationError) {
+      setErrorMessage(validationError.message || "Please complete your card details.");
+      setLoading(false);
+      return;
+    }
 
     // Build return URL with plan details as query params so PaymentSuccess
     // can display them even after Stripe's full-page redirect clears React state
@@ -41,27 +44,25 @@ const StripePayment = ({ plan, registrationData }: { plan: any, registrationData
 
     const returnUrl = `${window.location.origin}/payment-success?${returnParams.toString()}`;
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: returnUrl,
-      },
-    });
-
-    if (error) {
-      setErrorMessage(error.message || "An error occurred");
-      setLoading(false);
-      navigate('/payment-fail', { 
-        state: { 
-          plan, 
-          error: error.message,
-          registrationData 
-        } 
+    try {
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: returnUrl,
+        },
       });
+
+      // Immediate errors (validation, declined card, etc.) belong on the payment
+      // form so the customer can correct them and retry.
+      if (error) {
+        setErrorMessage(error.message || "Your payment could not be processed. Please try again.");
+        setLoading(false);
+      }
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Your payment could not be processed. Please try again.");
+      setLoading(false);
     }
   };
-
-  console.log(plan)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
