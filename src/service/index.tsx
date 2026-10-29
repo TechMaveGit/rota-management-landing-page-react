@@ -78,7 +78,7 @@ const createAxiosInstance = (): AxiosInstance => {
     // REQUEST INTERCEPTOR
     instance.interceptors.request.use(
         (request) => {
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("billing_token") || localStorage.getItem("token");
 
             if (token) {
                 request.headers?.set("Authorization", `Bearer ${token}`);

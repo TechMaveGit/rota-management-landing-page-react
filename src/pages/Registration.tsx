@@ -77,6 +77,7 @@ const Registration = () => {
   const [zipCode, setZipCode] = useState(incomingData?.zipCode || "")
   const [firstName, setFirstName] = useState(incomingData?.firstName || "")
   const [lastName, setLastName] = useState(incomingData?.lastName || "")
+  const [password, setPassword] = useState("");
   const [email, setEmail] = useState(incomingData?.email || "")
   const [formData, setFormData] = useState(incomingData?.formData || {
     phone: "",
@@ -198,6 +199,7 @@ const Registration = () => {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = "Invalid email format";
     }
+    if (!clientId && password.length < 8) newErrors.password = "Use at least 8 characters";
     if (!formData.phone || formData.phone.length < 5) newErrors.phone = "Phone number is required";
 
     setErrors(newErrors);
@@ -232,6 +234,7 @@ const Registration = () => {
         first_name: firstName,
         last_name: lastName,
         email: email,
+        password,
         phone: formData.phone
       };
 
@@ -241,6 +244,8 @@ const Registration = () => {
         if (res?.data?.status == true) {
           const newClientId = res?.data?.data?.client_id;
           setClientId(newClientId);
+          sessionStorage.setItem("billing_token", res.data.data.billing_token);
+          setPassword("");
           if (newClientId) {
             localStorage.setItem('onboarding_client_id', newClientId);
           }
@@ -624,6 +629,11 @@ const Registration = () => {
                       if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
                     }} id="accountEmail" className={`w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-sm px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-blue-400 transition-all`} placeholder="name@company.co.uk" />
                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" htmlFor="accountPassword">Password *</label>
+                    <input id="accountPassword" type="password" autoComplete="new-password" minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border border-gray-300 rounded-sm px-4 py-3" />
+                    {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Phone *</label>
