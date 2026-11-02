@@ -56,6 +56,8 @@ const PaymentSuccess = () => {
           timestamp: new Date().toISOString()
         }));
       }
+      localStorage.removeItem('billing_token');
+      sessionStorage.removeItem('billing_token');
       if (params.toString()) {
         window.history.replaceState(window.history.state, document.title, window.location.pathname);
       }

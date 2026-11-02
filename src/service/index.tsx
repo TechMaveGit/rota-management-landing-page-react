@@ -65,12 +65,16 @@ const refreshToken = async (): Promise<string | null> => {
 // CREATE AXIOS INSTANCE
 // -----------------------------------------
 const createAxiosInstance = (): AxiosInstance => {
+    const defaultToken = typeof window !== "undefined"
+        ? (sessionStorage.getItem("billing_token") || localStorage.getItem("billing_token") || localStorage.getItem("token"))
+        : null;
+
     const instance = axios.create({
         baseURL: baseUrl,
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
             Accept: "application/json",
+            ...(defaultToken ? { Authorization: `Bearer ${defaultToken}` } : {}),
         },
     });
 
@@ -78,10 +82,22 @@ const createAxiosInstance = (): AxiosInstance => {
     // REQUEST INTERCEPTOR
     instance.interceptors.request.use(
         (request) => {
-            const token = sessionStorage.getItem("billing_token") || localStorage.getItem("token");
+            const token = sessionStorage.getItem("billing_token")
+                || localStorage.getItem("billing_token")
+                || localStorage.getItem("token");
 
             if (token) {
-                request.headers?.set("Authorization", `Bearer ${token}`);
+                if (request.headers && typeof (request.headers as any).set === "function") {
+                    (request.headers as any).set("Authorization", `Bearer ${token}`);
+                } else if (request.headers) {
+                    (request.headers as any)["Authorization"] = `Bearer ${token}`;
+                }
+            } else if (request.headers) {
+                if (typeof (request.headers as any).delete === "function") {
+                    (request.headers as any).delete("Authorization");
+                } else {
+                    delete (request.headers as any)["Authorization"];
+                }
             }
 
             return request;

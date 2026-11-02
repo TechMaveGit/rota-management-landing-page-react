@@ -101,6 +101,10 @@ const Registration = () => {
 
   useEffect(() => {
     handleFetchPlans();
+    if (incomingData?.billingToken) {
+      sessionStorage.setItem("billing_token", incomingData.billingToken);
+      localStorage.setItem("billing_token", incomingData.billingToken);
+    }
   }, []);
 
   const handleFetchPlans = async () => {
@@ -217,8 +221,9 @@ const Registration = () => {
     if (currentStep === 2) {
       if (!validateStep3()) return;
 
-      // If account is already created (we have clientId), skip createAccount
-      if (clientId) {
+      // If account is already created (we have clientId and valid billing token), skip createAccount
+      const existingToken = sessionStorage.getItem("billing_token") || localStorage.getItem("billing_token");
+      if (clientId && existingToken) {
         setCurrentStep(3);
         return;
       }
@@ -243,8 +248,12 @@ const Registration = () => {
         setLoading(false);
         if (res?.data?.status == true) {
           const newClientId = res?.data?.data?.client_id;
+          const billingToken = res?.data?.data?.billing_token;
           setClientId(newClientId);
-          sessionStorage.setItem("billing_token", res.data.data.billing_token);
+          if (billingToken) {
+            sessionStorage.setItem("billing_token", billingToken);
+            localStorage.setItem("billing_token", billingToken);
+          }
           setPassword("");
           if (newClientId) {
             localStorage.setItem('onboarding_client_id', newClientId);
@@ -261,10 +270,12 @@ const Registration = () => {
     }
 
     if (currentStep === 3) {
-      // if (selectedPlanData && parseFloat(selectedPlanData.price) === 0) {
-      //   handlePlanActivation(clientId);
-      //   return;
-      // }
+      const activeToken = sessionStorage.getItem("billing_token") || localStorage.getItem("billing_token");
+      if (!activeToken) {
+        notify("Authorization token not found. Please review and re-submit your account information.", "error");
+        setCurrentStep(2);
+        return;
+      }
 
       const planId = selectedPlanData?.id;
       const payload = {
@@ -700,7 +711,8 @@ const Registration = () => {
                         plan={selectedPlanData}
                         registrationData={{
                           businessName, businessEmail, businessAddress, BusinessPhoneNo, businessCity, state, zipCode,
-                          firstName, lastName, email, formData, clientId, clientSecret, currentStep, selectedPlan, billingCycle
+                          firstName, lastName, email, formData, clientId, clientSecret, currentStep, selectedPlan, billingCycle,
+                          billingToken: sessionStorage.getItem("billing_token") || localStorage.getItem("billing_token")
                         }}
                       />
                     </Elements>
